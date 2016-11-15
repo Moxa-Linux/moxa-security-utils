@@ -1,0 +1,25 @@
+name: Cryptographic Key Establishment and Management
+
+req_category: Data-Confidentiality
+
+requirement: All Moxa devices shall be 1. capable of using cryptographic keys to maintain communication confidentiality; 2. capable of securely exchanging keys with a key management server; 3. capable of securely updating keys; 4. capable of removal and revocation of keys.
+
+design_guide: Moxa host-based device provide at least OpenSSL function to manage cryptographic keys.
+
+solution: Make sure openssl is installed. 
+
+package:
+  - openssl
+
+service:
+  enable:
+  disable:
+
+run: SR4.3 
+
+cmd:
+  - check-openssl-package
+
+cmd_description:
+  - Checking the openssl package.
+

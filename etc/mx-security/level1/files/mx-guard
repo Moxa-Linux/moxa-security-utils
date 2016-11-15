@@ -1,0 +1,56 @@
+#!/bin/bash
+
+mx-guard-init () {
+	local count=""
+	local log_message=""
+	local message=""
+	local guard_level=""
+	local pre_level=""
+
+	# Wait for device bootup complete.
+	sleep 30
+
+	guard_level=$(cat /etc/mx-security/mx-security.conf.d/level)	
+	if [[ X"$guard_level" != X"level0" ]]; then
+		/etc/mx-security/level1/run/SR2.1 install
+	fi
+
+	while ((1))
+	do
+		count=1
+		message=""
+		pre_level=$guard_level
+		guard_level=$(cat /etc/mx-security/mx-security.conf.d/level)	
+
+		if [[ X"$guard_level" != X"$pre_level" ]]; then
+			logger -t mx-guard "mx-security switch level from $pre_level to $guard_level"
+		fi
+
+		# Execute the mx-security checking function
+		# The for-guard checking function is easy to use % character to seperate each sentence.
+		message=$(mx-security check-for-guard | grep '%')
+		while ((1))
+		do	
+			# Use % to seperate sentence.
+			log_message=$(echo $message | cut -d'%' -f${count})
+			count=$((count + 1))
+			
+			# If log_message is not empty, record the message.
+			if [[ ${#log_message} -gt 1 ]]; then
+				logger -t mx-guard $log_message
+			else
+				break
+			fi
+		done
+		sleep_time=$(grep mx-guard /etc/mx-security/mx-security.conf.d/mx-security.conf | cut -d= -f2)
+		sleep ${sleep_time}
+	done
+}
+
+case $1 in
+	start)
+		mx-guard-init
+		;;
+	stop)
+		;;
+esac

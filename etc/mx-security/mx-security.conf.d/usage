@@ -1,0 +1,14 @@
+mx-security compliant with IEC-62443-4-2 standard.
+Usage:
+  mx-security [OPTIONS...] {COMMANDS...}
+OPTIONS:
+  -s, --switch [STAGE]         Setup the platform environment by security level.
+                               [STAGE]:
+                               level0 - Default security settings.
+                               level1 - IEC-62443 security level1 settings.
+                               level2 - IEC-62443 security level2 settings.
+                               level2_plus - IEC-62443 security level2 and some enhanced security settings.
+  -c, --check                  Check all of the security related status.
+  -v, --version                Show the mx-security program version.
+  -h, --help                   Show the mx-security usage.
+  -l, --level                  Show the current security level.

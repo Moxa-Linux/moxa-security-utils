@@ -1,0 +1,32 @@
+name: Wireless Access Restrictions
+
+req_category: Use-Control
+
+requirement: If Moxa devices support wireless access, Moxa devices shall: 1. enforce usage restrictions; 2. authorize, monitor, control wireless access to the IACS; 3. use authentication mechanisms to protect wireless access to the devices.
+
+design_guide: Moxa host-based device support the following options for wireless access: 1. Does not allow user control the device via wireless interface; 2. Only allow the specified user to control the device via wireless interface; 3. Allow all users to control the device via wireless interface; If user chooses option 2 or 3, Moxa host-based devices shall authorize, monitor, control wireless access.
+
+solution: Provide three options for wireless access: 1.	Doesn’t allow user control the device via wireless interface by SSH. (Default) 2. Only allow the specified user to control the device via wireless interface by SSH. 3.	Allow all users to control the device via wireless interface by SSH. Make sure acct, ssh and iptables package are installed.
+ 
+package:
+  - acct
+  - ssh
+  - iptables
+
+service:
+  enable:
+  disable:
+
+run: SR2.1
+
+cmd:
+  - install
+  - check-wl-restrict
+  - set-wl-restrict [OPTION]
+  - get-wl-restrict
+
+cmd_description:
+  - Setup ssh configration that does not allow user control the device via wireless interface.
+  - Checking the wireless restrictions setting. 
+  - Set the control device restrictions of wireless interface.\[OPTION]:\0 - Does not allow user control the device via wireless interface\1 - Only allow the specified user to control the device via wireless interface\2 - Allow all users to control the device via wireless interface.
+  - Get the information of control device restrictions.

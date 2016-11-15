@@ -1,0 +1,23 @@
+name: Access Control for Portable and Mobile Devices
+
+req_category: Use-Control
+
+requirement: All Moxa devices shall: 1. enforce usage restrictions for portable and mobile devices; 2. provide the capability to monitor portable and mobile device access.
+
+design_guide: Please reference the SR 2.1. To restrict the portable and mobile device access by user authentication and authorization.
+
+solution: Make sure auditd package is installed.
+
+package:
+  - auditd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

@@ -1,0 +1,26 @@
+name: Communication confidentiality
+
+req_category: Data-Confidentiality
+
+requirement: All Moxa devices shall prevent unauthorized and unintended information transfer via shared system resources by ensuring that when a shared resource is released back to the host device for use by a different user that all user unique data and connections to unique data are purged from the resource so it is not visible or accessible to the new user.
+
+design_guide: Reference CR.1.1. Moxa host-based device do not allow unauthorized access the shared resource by authenticating with corresponding access permission.
+
+solution: Make sure login, base-passwd, passwd, libpam-modules packages are installed. 
+
+package:
+  - login
+  - base-passwd
+  - passwd
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+
+run: 
+
+cmd:
+
+cmd_description:
+

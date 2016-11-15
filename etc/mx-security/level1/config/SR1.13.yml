@@ -1,0 +1,22 @@
+name: Device Identification and Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to identify devices before allowing a connection.
+
+design_guide: Moxa host-based devices provide login authentication at all access portals before access this device.
+
+solution: All access portals in default system already provide login authentication features. Notify user to mind all new access portals that installed by themselves should provide login authentication in users’ manual.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

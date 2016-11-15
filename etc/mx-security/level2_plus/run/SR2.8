@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.8:
+#		Time Stamps
+#
+
+check-time-source () {
+	echo -n -e ""
+}
+
+case "$1" in
+	check-time-source)
+		check-time-source
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

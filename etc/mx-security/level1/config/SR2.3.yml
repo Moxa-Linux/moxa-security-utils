@@ -1,0 +1,24 @@
+name: Mobile Code
+req_category: Use-Control
+
+requirement: All Moxa devices shall enforce usage restrictions for mobile code technologies based on the potential to cause damage to the devices; and provide the capability to monitor the use of mobile code.
+
+design_guide: Moxa host-based devices shall provide at least one of the following features for mobile code to be installed/run in the system: 1. User Manual shall suggest user to install Anti-virus to allow or disallow the mobile code execution; 2. Shall monitor the mobile code execution; 3. Shall isolated the mobile code execution.
+
+solution: Suggest user to install Anti-virus to prevent mobile code in users’ manual. Provide a isolated execution feature and make sure auditd, firejail packages are installed.
+
+package:
+  - firejail
+  - auditd
+
+service:
+  enable:
+  disable:
+
+run: SR2.3
+
+cmd:
+  - set-isolated-run [COMMAND]
+
+cmd_description:
+  - Run a program in isolated environmnent.\[COMMAND]: A command that you want to execute in isolated environment.\If [COMMAND] is empty, it will enter into a isolated bash environment.

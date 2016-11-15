@@ -1,0 +1,25 @@
+name: Session Lock
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to prevent further access to the system by initiating a session lock after an organization-defined time period of inactivity. The session lock shall remain in effect until the human user who owns the session, or another authorized human user, re-establishes access using appropriate identification and authentication procedures.
+
+design_guide: Moxa host-based devices have the capability of automatic logout if the SSH remote console or serial console is inactive within a configurable period.
+
+solution: Setup serial console automatically logout feature when serial console is inactive for a time. (default: 600 secs)
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: SR1.10
+
+cmd:
+  - install
+  - check-console-timeout
+
+cmd_description:
+  - Setup the session timeout configuration.
+  - Checking the serial console session timeout setting.

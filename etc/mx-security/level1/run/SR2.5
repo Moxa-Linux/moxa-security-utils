@@ -1,0 +1,138 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.5:
+#		Auditable Events	
+#
+
+. /etc/mx-security/mxsec_functions
+
+get-login-log () {
+	local log_file_path=""
+	
+	log_file_path=$(grep "^auth" /etc/rsyslog.conf | awk '{print $2}')
+	if [ -f $log_file_path ]; then
+		if [[ X"$1" == X"" ]]; then
+			grep -a -E "session opened|authentication failure" "$log_file_path"
+		else
+			grep -a -E "session opened|authentication failure" "$log_file_path" | grep "$1"
+		fi
+
+		if [[ X"$?" == X"0" ]]; then
+			echo -n -e "Get login log file message."
+		else
+			echo -n -e "There is something wrong or there is no login log file message."
+			exit 1
+		fi
+	else
+		echo -n -e "There is no login log mesaage file."
+		exit 1
+	fi
+}
+
+get-package-log () {
+	local log_file_path=""
+        
+	log_file_path=$(grep "^log" /etc/dpkg/dpkg.cfg | awk '{print $2}')
+        if [ -f $log_file_path ]; then
+                if [[ X"$1" == X"" ]]; then
+                        grep -E "installed|remove|purge" "$log_file_path"
+                else
+                        grep -E "installed|remove|purge" "$log_file_path" | grep "$1"
+                fi
+		
+		if [[ X"$?" == X"0" ]]; then
+                	echo -n -e "Get package log file message."
+		else
+			echo -n -e "There is something wrong or there is no package log file message."
+			exit 1
+		fi
+        else
+                echo -n -e "There is no package log mesaage file."
+                exit 1
+        fi
+}
+
+get-network-log () {
+	local log_file_path=""
+        
+	log_file_path=$(grep "^kern" /etc/rsyslog.conf | awk '{print $2}' | cut -d- -f2)
+        if [ -f $log_file_path ]; then
+                grep -E "eth.*Link" "$log_file_path"
+		
+		if [[ X"$?" == X"0" ]]; then
+                	echo -n -e "Get network log message."
+		else
+			echo -n -e "There is something wrong or there is no network log file message."
+			exit 1
+		fi
+        else
+                echo -n -e "There is no kernel message log file."
+                exit 1
+        fi
+}
+
+check-log-file () {
+	# Check log message
+	if [ ! -f /var/log/auth.log ]; then
+		echo -n -e "Couldn't detect authentication log file."
+		exit 1
+	fi
+
+	if [ ! -f /var/log/kern.log ]; then
+		echo -n -e "Couldn't detect kernel log file."
+		exit 1
+	fi
+	
+	if [ ! -f /var/log/dpkg.log ]; then
+		echo -n -e "Couldn't detect package log file."
+		exit 1
+	fi
+}
+
+check-log-config-setting () {
+	if ! grep "^auth" /etc/rsyslog.conf > /dev/null; then
+		echo -n -e "Couldn't detect authentication log setting."
+		exit 1
+	fi
+	
+	if ! grep "^kern" /etc/rsyslog.conf > /dev/null; then
+		echo -n -e "Couldn't detect kernel log setting."
+		exit 1
+	fi
+
+	if ! grep "^log" /etc/dpkg/dpkg.cfg > /dev/null; then
+		echo -n -e "Couldn't detect dpkg log setting."
+		exit 1
+	fi
+}
+
+case "$1" in
+	get-login-log)
+		get-login-log $2
+		;;
+	get-package-log)
+		get-package-log $2
+		;;
+	get-network-log)
+		get-network-log
+		;;
+	check-log-file)
+		check-log-file
+		;;
+	check-log-config-setting)
+		check-log-config-setting
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

@@ -1,0 +1,23 @@
+name: Audit Storage Capacity
+req_category: Use-Control
+
+requirement: All Moxa devices shall provide the capability to allocate audit record storage capacity according to commonly recognized recommendations for log management. And provide mechanisms to prevent a failure of the application or device when it reaches or exceeds the audit storage capacity.
+
+design_guide: Moxa host-based device shall reserved at least 10M for storing audit records.
+
+solution: Provides a check function to notify user when storage capacity is less than 10MB.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: SR2.6
+
+cmd:
+  - check-reserved-storage
+
+cmd_description:
+  - Checking whether the target machine reserve at least 10 MB for storing records.
+

@@ -1,0 +1,23 @@
+name: Security functionality verification 
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall provide the capability to support verification of the intended operation of security functions and report when anomalies are discovered.
+All Moxa devices shall provide guidance on how to test the designed security controls.
+
+design_guide: Moxa host-based device shall provide Test plan & requirement document in the user guide for security function verification.
+
+solution: Provide SRS & SDS & PV team test plan in users’ manual. 
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

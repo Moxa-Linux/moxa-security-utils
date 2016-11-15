@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.3:
+#		Mobile Code	
+#
+
+. /etc/mx-security/mxsec_functions
+
+set-isolated-run () {
+	if [ X"$1" == X"" ]; then
+		firejail --noprofile
+	else
+		firejail --noprofile "$1"
+	fi
+	[[ X"$?" != X"0" ]] && echo -n -e "Executed command fail." && exit 3
+	echo -n -e "Executed command by firejail"
+}
+
+case "$1" in
+	set-isolated-run)
+		set-isolated-run $2
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

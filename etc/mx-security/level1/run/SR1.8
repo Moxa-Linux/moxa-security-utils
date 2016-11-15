@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR1.8:
+#		System use notification
+#	Commands:
+#		1. install
+#		2. check-ssh-banner
+#	
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "sshd_config" "level1"
+	systemctl "restart" "ssh.service"
+}
+
+check-ssh-banner () {
+	if ! grep "^Banner" "/etc/ssh/sshd_config" > /dev/null; then
+		echo -n -e "Couldn't detect the sshd banner feature configuration."
+		exit 2
+	fi	
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-ssh-banner)
+		check-ssh-banner
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

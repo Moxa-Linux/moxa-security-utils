@@ -1,0 +1,26 @@
+name: Setup Service Status to Default
+
+requirement: N/A
+
+design_guide: N/A
+
+solution: Disable snmpd service and apache service.
+
+package:
+
+service:
+  enable:
+  disable:
+    - snmpd.service
+    - apache2.service
+
+run: Service_Set2Def
+
+cmd:
+  - check-snmpd
+  - check-apache
+
+cmd_description:
+  - Check snmpd service status (It is disabled by default).
+  - Check apache service status (It is disabled by default).
+

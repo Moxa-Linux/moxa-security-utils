@@ -1,0 +1,24 @@
+name: Least Functionality
+
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall provide the capabilities necessary to specifically prohibit and/or restrict the use of unnecessary functions, ports, protocols, and/or services.
+
+design_guide: Moxa host-based devices shall allow authenticated administrator to prohibit and/or restrict the use of unnecessary functions, ports, protocols, and/or services.
+
+solution: Make sure dpkg and systemd packages are installed. 
+
+package:
+  - dpkg
+  - systemd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

@@ -1,0 +1,139 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR1.12:
+#		Remote Access
+#	Commands:
+#		1. set-service-disabled
+#		2. set-service-enabled
+#		3. set-service-started
+#		4. set-service-stopped
+#		5. get-service-status
+#
+
+select_service () {
+	service=""
+
+	case "$1" in 
+		0)
+			service="snmpd.service"
+			;;
+		1)
+			service="sshd.service"
+			;;
+		2)
+			service="apache.service"
+			;;
+		*)
+			exit 3
+			;;
+	esac
+}
+
+set-service-disabled () {
+	local ret_val=""
+	local confirm=""
+
+	select_service $1
+
+	if [ X"$service" == X"sshd.service" ]; then
+		echo ""
+		echo "If you disable $service, you may not connect to the device."
+		echo -n -e "Do you want to continue? (Y/n)"
+		read confirm
+		if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+			exit 1
+		fi
+	fi
+
+	systemctl "disable" "$service"
+	ret_val=$?
+	echo -n -e "Disabled $service"
+	
+	[ X"$ret_val" != X"0" ] && exit 1
+}
+
+set-service-enabled () {
+	local ret_val=""
+
+	select_service $1
+	
+	systemctl "enable" "$service"
+	ret_val=$?
+	echo -n -e "Enabled" "$service"
+	
+	[ X"$ret_val" != X"0" ] && exit 1
+}
+
+get-service-status () {
+	local ret_val=""
+
+	select_service $1
+	
+	systemctl "status" "$service"
+	ret_val=$?
+	echo -n -e "Show $service status"
+}
+
+set-service-started () {
+	local ret_val=""
+
+	select_service $1
+	
+	systemctl "start" "$service"
+	ret_val=$?
+	echo -n -e "start" "$service"
+	
+	[ X"$ret_val" != X"0" ] && exit 1
+}
+
+set-service-stopped () {
+	local ret_val=""
+	local confirm=""
+
+	select_service $1
+	
+	if [ X"$service" == X"sshd.service" ]; then
+		echo ""
+		echo "If you disable $service, you may not connect to the device."
+		echo -n -e "Do you want to continue? (Y/n)"
+		read confirm
+		if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+			exit 1
+		fi
+	fi
+	
+	systemctl "stop" "$service"
+	ret_val=$?
+	echo -n -e "stop" "$service"
+	
+	[ X"$ret_val" != X"0" ] && exit 1
+}
+
+case "$1" in
+	set-service-disabled)
+		set-service-disabled $2
+		;;
+	set-service-enabled)
+		set-service-enabled $2
+		;;
+	get-service-status)
+		get-service-status $2
+		;;
+	set-service-stopped)
+		set-service-stopped $2
+		;;
+	set-service-started)
+		set-service-started $2
+		;;
+	*)
+		exit 3
+		;;
+esac
+
+exit 0

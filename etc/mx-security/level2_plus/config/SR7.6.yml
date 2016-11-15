@@ -1,0 +1,24 @@
+name: Network and Security Configuration Settings
+
+req_category: Network Resource Availability
+
+requirement: All Moxa devices shall provide the ability to output current user configurable network and security settings pertaining to these devices.
+
+design_guide: Moxa host-based devices provide SSH/HTTPS for authenticated use to access the current user configurable network and security settings pertaining to these devices.
+
+solution: Make sure apache2 and sshd packages are installed.
+
+package:
+  - apache2
+  - ssh
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

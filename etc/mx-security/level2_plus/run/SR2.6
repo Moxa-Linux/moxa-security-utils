@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.6:
+#		Audit Storage Capacity
+#
+
+. /etc/mx-security/mxsec_functions
+
+check-guard-monitor () {
+	if ! ps aux | grep mx-guard | grep -v "grep" > /dev/null; then
+		echo -n -e "Couldn't detect mx-guard daemon."
+	fi
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-guard-monitor)
+		check-guard-monitor
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

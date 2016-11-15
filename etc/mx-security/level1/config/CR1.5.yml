@@ -1,0 +1,28 @@
+name: Strength of Password-based Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: Moxa devices shall provide or integrate into a system that provides the capability to enforce configurable password strength based on minimum length and variety of character types. An enable/disable option for password complexity strength check shall be provided. This password strength checking mechanism shall include: 1. The minimum password length checking. 2. Support special characters. 3. Show the hint for the lack of the password typed to the users.
+
+design_guide: Moxa host based devices provide the capability of configurable password strength checking based on minimum length(4-16) and variety of character types. e.g. 1. At least one number: 0 to 9. 2. Mixed upper and lower letters: A to Z, a to z. 3. At least one special character: ~!@#$%^&*-_|;:,.<>[]{}().
+
+solution: Setup the password strength. At least one digit, one upper letter, one lower letter and one special character. Make sure libpam-modules, passwd and base–passwd packages are installed.
+
+package:
+  - libpam-modules
+  - passwd
+  - base-passwd
+
+service:
+  enable:
+  disable:
+
+run: CR1.5
+
+cmd:
+  - install
+  - check-strength-of-pwd
+
+cmd_description:
+  - Setup the strength of password configuration.
+  - Checking the strength of password configuration.

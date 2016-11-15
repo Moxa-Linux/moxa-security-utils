@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       Service_Set2Def:
+#		Disable snmpd service and apache service.	
+#	Commands:
+#		1. check-snmpd
+#		2. check-apache
+#
+
+check-snmpd () {
+	if ! systemctl status snmpd.service | grep "Active: inactive" > /dev/null; then
+		echo -n -e "snmpd.service is not inactive."
+		exit 1	
+	fi	
+}
+
+check-apache () {
+	if ! systemctl status apache2.service | grep "Active: inactive" > /dev/null; then
+		echo -n -e "apache2.service is not inactive."
+		exit 1	
+	fi
+}
+
+case "$1" in
+	check-snmpd)
+		check-snmpd
+		;;
+	check-apache)
+		check-apache
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0

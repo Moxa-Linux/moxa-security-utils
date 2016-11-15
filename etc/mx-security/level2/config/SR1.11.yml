@@ -1,0 +1,33 @@
+name: Remote Session Termination
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to terminate a remote session after an organization-defined inactivity period of time.
+
+design_guide: Moxa host-based devices have the capability of automatic logout if the SSH remote console or serial console is inactive within a configurable period.
+
+solution: Setup ssh session automatically logout when ssh is inactive for a time. (default: 600 secs) Make sure ssh package is installed and sshd.service is running.
+
+package:
+  - ssh
+
+service:
+  enable:
+    - sshd.service
+  disable:
+
+run: SR1.11
+
+cmd:
+  - install
+  - get-ssh-timeout
+  - set-ssh-timeout [TIME]
+  - check-ssh-timeout
+  - check-ssh-package
+
+cmd_description:
+  - Setup the configuration of ssh session timeout.
+  - Get the configuration of ssh session timeout.
+  - Set the configuration of ssh session timeout.\If ssh is inactive within [TIME] seconds period, it will logout automatically.
+  - Checking the configuration of ssh session timeout.
+  - Checking the ssh package.

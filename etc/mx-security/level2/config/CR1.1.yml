@@ -1,0 +1,24 @@
+name: Human User, Process and Device Identification and Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: If Moxa devices allow users to access to the device resource, they shall provide the capability to uniquely identify and authenticate each user at all access portals.[Definition of unique identifier (UID): any identifier is guaranteed to be unique among all identifiers used for those objects and for a specific purpose.]
+
+design_guide: Moxa host-based devices provide UID at all access portals for each login user.
+
+solution: Make sure login, adduser packages are installed. 
+
+package:
+  - login
+  - adduser
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

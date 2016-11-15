@@ -1,0 +1,25 @@
+name: Strength of Public Key Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to validate certificates:1. Validate certificates by checking the validity of the signature of a given certificate;2. Validate certificates by constructing a certification path to an accepted certification authority (CA) or in the case of self-signed certificates;3. Validate certificates by checking a given certificate's revocation status;4. Establish user control of the corresponding private key;5. Map the authenticated identity to a user by checking either subject name, common name or distinguished name against the requested destination.
+
+design_guide: Moxa host-based system shall support OpenSSL/PGP function to establish the corresponding private key of a certificate, validate, import, revocate or map the authenticated identity of a certificate.
+
+solution: Make sure openssl package is installed.
+
+package:
+  - openssl
+
+service:
+  enable:
+  disable:
+
+run: CR1.6
+
+cmd:
+  - check-openssl-package
+
+cmd_description:
+  - Checking the openssl package.
+

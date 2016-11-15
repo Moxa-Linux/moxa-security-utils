@@ -1,0 +1,27 @@
+name: System use notification
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to display a system use notification message before authenticating. The system use notification message shall be configurable by authorized personnel.
+
+design_guide: Moxa host-based devices provide a configurable system use notification message before authenticating.
+
+solution: Setup SSH banner feature. Make sure ssh package is installed.
+
+package:
+  - ssh
+
+service:
+  enable:
+  disable:
+
+run: SR1.8
+
+cmd:
+  - install
+  - check-ssh-banner
+
+cmd_description:
+  - Enable the banner feature of ssh.
+  - Checking the ssh banner feature in sshd configuration.
+

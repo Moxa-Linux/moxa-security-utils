@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR4.4:
+#		Use of Cryptography
+#	Commands:
+#		1. check-openssl-package
+#
+
+. /etc/mx-security/mxsec_functions
+
+case "$1" in
+	check-openssl-package)
+		check_package "openssl"
+		;;
+	*)
+		exit 3
+		;;
+esac
+
+exit 0
+

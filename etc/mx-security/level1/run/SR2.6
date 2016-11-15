@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.6:
+#		Audit Storage Capacity
+#
+
+check-reserved-storage () {
+	local reserved_storage=$(df | grep "/dev/root" | awk '{print $4}')	
+	if [[ $reserved_storage -lt 10240 ]]; then
+		echo -n -e "The disk storage is less than 10 MB."
+		exit 1
+	else
+		reserved_storage=$((reserved_storage / 1024))
+		echo -n -e "(Availible disk space = $reserved_storage MB)"
+	fi
+}
+
+case "$1" in
+	check-reserved-storage)
+		check-reserved-storage
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

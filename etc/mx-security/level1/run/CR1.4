@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       CR1.4:
+#		Authenticator Management
+#
+
+check-def-pwd () {
+	if grep "gBHEMrckbK9dpFJ0xrrO07TecyKNgTeB2Q69PKwFuuZC47W0k7zdWyF115efj9c5UmpxjB" "/etc/shadow" > /dev/null; then
+		echo -n -e "Please change the default password!"
+		exit 1
+	fi
+}
+
+case "$1" in
+	check-def-pwd)
+		check-def-pwd
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0

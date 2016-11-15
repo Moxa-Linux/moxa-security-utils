@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR3.4:
+#		Software and information integrity
+#	Commands:
+#		1. install 
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	backup_file "integrit.conf"
+	install_file "integrit.conf" "level1"
+}
+
+set-integrity-database () {
+	local confirm=""
+
+	# Initial integrit database
+	if [[ -f /var/lib/integrit/known.cdb ]]; then
+		echo ""
+		echo -n -e "The /var/lib/integrit/known.cdb data file is exist. Do you want to overwrite the data ? [Y/n]"
+		read confirm
+		if [[ X"$confirm" == X"Y" ]] || [[ X"$confirm" == X"y" ]]; then
+			integrit -C /etc/integrit/integrit.conf -u
+			cp /var/lib/integrit/current.cdb /var/lib/integrit/known.cdb	
+		fi
+	else
+                integrit -C /etc/integrit/integrit.conf -u
+                cp /var/lib/integrit/current.cdb /var/lib/integrit/known.cdb
+	fi
+
+}
+
+check-integrity-database () {
+	local know_db
+
+	know_db=$(grep "^know" /etc/integrit/integrit.conf | cut -d= -f2)
+	
+	if [[ ! -f "$know_db" ]]; then
+		echo -n -e "There is no integrit database. You can use "mx-security set-integrity-database" command to create it."
+		exit 1
+	fi 
+}
+
+get-integrity-info () {
+	local know_db
+
+	know_db=$(grep "^know" /etc/integrit/integrit.conf | cut -d= -f2)
+	integrit -C /etc/integrit/integrit.conf -c
+	echo -n -e "Get integrity information."
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-integrity-database)
+		check-integrity-database
+		;;
+	set-integrity-database)
+		set-integrity-database
+		;;
+	get-integrity-info)
+		get-integrity-info
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

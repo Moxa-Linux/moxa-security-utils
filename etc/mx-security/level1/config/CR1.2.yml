@@ -1,0 +1,24 @@
+name: Account Management
+
+req_category: Identification-and-Authentication-Control
+
+requirement: If Moxa devices provide user access, Moxa devices shall provide the management of all accounts, including establishing, activating, modifying, disabling and removing accounts.
+
+design_guide: Moxa host-based devices shall provide the capability to support the management of accounts including establishing, deleting, modifying, activating and disabling.
+
+solution: Make sure login and adduser package are installed. 
+
+package:
+  - login
+  - adduser
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

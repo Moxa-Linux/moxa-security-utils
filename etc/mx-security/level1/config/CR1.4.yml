@@ -1,0 +1,26 @@
+name: Authenticator Management
+req_category: Identification-and-Authentication-Control
+
+requirement: Authenticator for all Moxa devices is defined as password. If Moxa devices provide user access, Moxa devices shall be able to: 1. Support the use of initial authenticator content; 2. Support the recognition of changes to default authenticators made at installation time; 3. Function properly with periodic authenticator change/refresh operation; 4. Protect authenticators from unauthorized disclosure and modification when stored, used and transmitted.
+
+design_guide: 1. Default ID/password for Linux is moxa/moxa, for Windows is created by users themselves. 2. Support a notice message to remind the default user to change the default password. Operation of account management shall be limited to administrator level only. (Only administrator can do that) 3. Support the operation for account periodically change/refresh authenticator; 4. Support encrypted authenticators when stored, used and transmitted.
+
+solution: Make sure libpam-modules, passwd and base-passwd packages are installed. Provide a feature to notify user to change default password.
+
+package:
+  - libpam-modules
+  - passwd
+  - base-passwd
+
+service:
+  enable:
+  disable:
+
+run: CR1.4
+
+cmd:
+  - check-def-pwd
+
+cmd_description:
+  - Checking whether the user already change the account default password or not.
+

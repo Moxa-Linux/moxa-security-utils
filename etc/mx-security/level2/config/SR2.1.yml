@@ -1,0 +1,23 @@
+name: Wireless Access Restrictions
+
+req_category: Use-Control
+
+requirement: If Moxa devices support wireless access, Moxa devices shall provide the encryption capability to help protect against eavesdropping of the wireless.
+
+design_guide: For wireless accessing, Moxa host-based devices shall provide the encryption capability and strongly recommend to only use the encrypted accessing for against eavesdropping of the wireless.
+
+solution: The system already provides WEP/WPA/WPA2 wireless encryption capability. Suggest user to use encryption mechanism in users’ manual. Make sure wpasupplicant package is installed.
+
+package:
+  - wpasupplicant
+
+service:
+  enable:
+  disable:
+
+run: 
+
+cmd:
+
+cmd_description:
+

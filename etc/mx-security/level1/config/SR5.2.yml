@@ -1,0 +1,24 @@
+name: Application Partitioning 
+
+req_category: Restrict-Data-Flow
+
+requirement: All Moxa devices shall support partitioning of data, applications and services based on criticality to facilitate implementing a zoning model as per ISA-99.03.02.
+
+design_guide: Moxa host-based devices provide at least one of the following Zoning model utility, ex: Firewall, VPN, VLAN, VM, docker, ..., for partition of data, applications and service.
+
+solution: Make sure iptables and openvpn packages are installed.
+
+package:
+  - openvpn
+  - iptables
+
+service:
+  enable:
+  disable:
+
+run: SR5.2
+
+cmd:
+
+cmd_description:
+

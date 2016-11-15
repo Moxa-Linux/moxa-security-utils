@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR5.2:
+#		Application Partitioning
+#	Commands:
+#		1. check-docker.io-package
+#		2. check-openvpn-package
+#		3. check-qemu-package
+#
+
+. /etc/mx-security/mxsec_functions
+
+case "$1" in
+	install)
+		install
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

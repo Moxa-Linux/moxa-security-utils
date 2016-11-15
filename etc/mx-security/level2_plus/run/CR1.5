@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       CR1.5:
+#		Strength of Password-based Authentication
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "login.defs" "level2_plus"
+	install_file "common-password" "level2_plus"
+}
+
+check-lifetime-of-pwd () {
+	if ! grep "^PASS_MIN_DAYS" "/etc/login.defs" | grep 365 > /dev/null; then
+		echo -e -n "Couldn't detect the PASS_MAX_DAYS setting."
+		exit 1
+	fi
+}
+
+check-reuse-of-pwd () {
+	if ! grep "[success=1 default=ignore]" "/etc/pam.d/common-password" | grep "remember=5" > /dev/null; then
+                echo -e -n "Couldn't detect the remember setting."
+                exit 1
+        fi
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-lifetime-of-pwd)
+		check-lifetime-of-pwd
+		;;
+	check-reuse-of-pwd)
+		check-reuse-of-pwd
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

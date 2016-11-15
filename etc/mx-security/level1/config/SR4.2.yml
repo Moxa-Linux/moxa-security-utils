@@ -1,0 +1,29 @@
+name: Communication confidentiality
+
+req_category: Data-Confidentiality
+
+requirement: All Moxa devices shall protect the confidentiality of transmitted information that the organization has classified as sensitive.
+
+design_guide: Moxa host-based device provide at least one of the network encryption library or capability for confidential information transfer. For example, 1. The the data transfer can be protected by the VPN. 2. The remote login information can be encrypted by SSH. 3. The web communication can be protected by https connection.
+
+solution: Make sure openvpn, openssh, apache2 and openssl are installed. 
+
+package:
+  - openvpn
+  - ssh
+  - openssl
+  - apache2
+
+service:
+  enable:
+  disable:
+  - apache2.service
+
+run: SR4.2
+
+cmd:
+  - check-apache2
+
+cmd_description:
+  - Checking the apache2 service status (Disable it is recommand).
+

@@ -1,0 +1,23 @@
+name: Remote Access
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to monitor and control all methods of remote access to the Moxa devices.
+
+design_guide: Moxa host-based devices provide the capability for turning on/off all the remote access interfaces and monitor the remote access activity.
+
+solution: Make sure systemd package is installed.
+
+package:
+  - systemd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+  
+cmd_description:
+

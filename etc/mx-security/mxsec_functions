@@ -1,0 +1,159 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       functions:
+#               Moxa cyber security tool's common functions.
+#
+
+# mx-security config file
+MXSECURITY_CONF="/etc/mx-security/mx-security.conf.d/mx-security.conf"
+
+### Install the configuration file into system ### 
+install_file () {
+	local stage=""
+	local file_path=""
+	local file_name=$1
+	local current_level=$2
+
+	# Get information
+	stage=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $1}')
+	file_path=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
+
+	# Install the configuration file into system.
+	cp -arf "/etc/mx-security/$stage/files/$file_name" "$file_path"
+	return $?
+}
+
+### Backup the configuration file ###
+backup_file () {
+	local backup_time=""
+	local file_path=""
+	local file_name=$1
+	local current_level=$2
+
+	# Get information
+	backup_time=$(cat /etc/mx-security/mx-security.conf.d/backup_time)
+	file_path=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
+
+	# Install the configuration file into system.
+	mkdir -p /etc/mx-security/bak_sys_config/${backup_time}
+	cp -arf "$file_path" "/etc/mx-security/bak_sys_config/${backup_time}/"
+	return $?
+}
+
+### Checking whether the package is installed or not. ###
+check_package () {
+	if ! dpkg -l | awk '{print $2}' | grep "^$1" > /dev/null; then
+		return 1	
+	else
+		return 0
+	fi
+}
+
+### ###
+get_config_val () {
+	local req_num=$1
+	local val_name=$2
+	local tmp_val=""
+
+	tmp_val=$(grep -E "${req_num}.*${val_name}" "$MXSECURITY_CONF" | awk '{print $2}' | cut -d= -f2)
+
+	echo $tmp_val
+}
+
+### ###
+check_value () {
+	local tmp_val=$1
+	local lower_bound=$2
+	local upper_bound=$3
+
+	if ! echo $tmp_val | grep '^[[:digit:]]*$' > /dev/null; then
+                echo -n -e "The parameter is not a number."
+                exit 1
+        elif [[ $tmp_val -lt $lower_bound ]] || [[ $tmp_val -gt $upper_bound ]]; then
+                echo -n -e "The number is invalid."
+                exit 1
+        fi
+	return 0
+}
+
+### ###
+set_config_val () {
+	local req_num=$1
+        local val_name=$2
+	local tmp_val=$3
+
+	sed -i "/$req_num $val_name/d" "$MXSECURITY_CONF"
+	echo "${req_num} ${val_name}=${tmp_val}" >> $MXSECURITY_CONF
+	
+        return 0
+}
+
+
+### Backup Functions [check backup file path] ###
+check_backup_path () {
+	local backup_path=$1
+	USB_DIR=$(df -h | grep /dev/sd | awk '{print $6}')
+
+	if ! echo $backup_path | grep $USB_DIR; then
+		echo -n -e "The path is not in USB directory"
+		exit 1
+	fi
+}
+
+### Backup Functions [check file checksum] ###
+check_file_checksum () {
+	local backup_file=$1
+	local checksum=$(md5sum $backup_file | awk '{print $1}')
+
+	if ! grep "$checksum" "/etc/mx-security/mx-security.conf.d/backup_checksum"; then
+		echo -n -e "The backup file is not integrity."
+		exit 1
+	fi
+}
+
+### Backup Functions [Create restore process] ###
+create_restore_process () {
+	local backup_file=$1
+
+	TMP_FS=/dev/shm/debian
+	
+	# Get rootfile system partition from cmdline. e.g. /dev/mmcblk0p2
+	ROOT_PART=$(cat /proc/cmdline)
+	ROOT_PART="${ROOT_PART##*root=}"
+	ROOT_PART="${ROOT_PART%% *}"
+	
+	# Strip the partition number to fetch sd node e.g. /dev/mmcblk0
+	SD_NODE="${ROOT_PART%%p2}"
+	
+	mkdir -p ${TMP_FS} 2> /dev/null
+	# mount backup partition to ${TMP_FS}
+	mount ${SD_NODE}p3 ${TMP_FS} 2> /dev/null
+
+cat > "${TMP_FS}/setdef-chroot_mxsec" << AAA 
+#!/bin/sh
+
+#ignore signal
+trap '' 1 2 3 6
+TMP_FS=/dev/shm/debian
+REAL_FS=rfs
+
+cd \${REAL_FS} && \
+ls . | grep -v -E '(proc|sys|dev|mnt|run|media)' | xargs rm -rf 2> /dev/null
+
+cd /
+
+tar xvf $backup_file -C \${REAL_FS}
+
+sync
+AAA
+	chmod 755 "${TMP_FS}/setdef-chroot_mxsec"	
+	umount ${TMP_FS}
+}
+
+

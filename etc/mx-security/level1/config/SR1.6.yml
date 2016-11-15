@@ -1,0 +1,22 @@
+name: Authenticator Feedback
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to obscure feedback of authentication information during the authentication process.
+
+design_guide: Moxa host-based system shall obscure the feedback message during authentication process.
+
+solution: System already obscure feedback message. Notify user to obscure feedback message during any their authentication process program in users’ manual.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

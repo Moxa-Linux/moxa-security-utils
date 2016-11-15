@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+
+. /etc/mx-security/mxsec_functions
+
+set-system-backup-encryption () {
+	local backup_path=$1
+	local password1=""
+	local password2=""
+	local backup_time=$(date +"%y%m%d%H%M%S")
+
+
+	echo "The utility is going to backup the whole root file system with encryption."
+	echo -ne "Please, enter aes-256-cbc encryption password:"
+	read password1
+	echo -ne "Please, enter it again.(verifying) :"
+	read password2
+	
+	if [[ X"$password1" != X"$password2" ]]; then
+		echo -ne "The password is different! "
+		exit 1
+	fi
+
+	cd /
+	ls / | grep -v -E '(proc|sys|dev|mnt|run|media)' | xargs tar -zcvf /tmp/backup_${backup_time}.tar.gz
+	openssl aes-256-cbc -salt -k ${password1} -in /tmp/backup_${backup_time}.tar.gz -out ${backup_path}/backup_${backup_time}.tar.gz.encrypt
+	md5sum "${backup_path}/backup_${backup_time}.tar.gz.encrypt" >> /etc/mx-security/mx-security.conf.d/backup_checksum
+	rm -rf /tmp/backup_${backup_time}.tar.gz
+}
+
+set-restore-system-encryption () {
+	backup_file_path=$1
+
+	check_backup_path $backup_file_path
+	check_file_checksum $backup_file_path
+	echo "The utility is going to decryption the backup file."
+	echo -ne "Please, enter aes-256-cbc encryption password:"
+	read password1
+	echo -ne "Please, enter it again.(verifying) :"
+	read password2
+	
+	if [[ X"$password1" != X"$password2" ]]; then
+		echo -ne "The password is different! "
+		exit 1
+	fi
+	
+	USB_DIR=$(df -h | grep /dev/sd | awk '{print $6}')
+	openssl aes-256-cbc -salt -k ${password1} -d -in $backup_file_path -out ${USB_DIR}/temp_backup_file.tar.gz
+	
+	create_restore_process "${USB_DIR}/temp_backup_file.tar.gz"
+	install_file "mxsec_setdef" "level1"
+	sed -i "/sync/i rm -rf ${USB_DIR}/temp_backup_file.tar.gz" /sbin/mxsec_setdef
+	bash /sbin/mxsec_setdef
+}
+
+case "$1" in
+	set-system-backup-encryption)
+		set-system-backup-encryption $2
+		;;
+	set-restore-system-encryption)
+		set-restore-system-encryption $2
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

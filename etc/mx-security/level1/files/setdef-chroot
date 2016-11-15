@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#ignore signal
+trap '' 1 2 3 6
+TMP_FS=/dev/shm/debian
+REAL_FS=rfs
+
+cd ${REAL_FS} && \
+ls . | grep -v -E '(proc|sys|dev|mnt|run)' | xargs rm -rf 2> /dev/null
+
+cd /
+
+tar jxvf  -C ${REAL_FS}
+
+sync

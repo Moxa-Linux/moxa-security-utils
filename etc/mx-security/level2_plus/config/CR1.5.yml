@@ -1,0 +1,28 @@
+name: Strength of Password-based Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: Moxa devices shall provide the capability to prevent any given human user account from reusing a password for a configurable number of generations. In addition, Moxa devices shall provide the capability to enforce password minimum and maximum lifetime restrictions for human users
+
+design_guide: The utility shall provide the capability to prevent any given human user account from reusing a password for a configurable number of generations. In addition, Moxa devices shall provide the capability to enforce password minimum and maximum lifetime restrictions for human users
+
+solution: Setup the lifetime(default 365 days) and reusing(default 3 times) password restriction. Make sure libpam-modules is installed.
+
+package:
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+
+run: CR1.5
+
+cmd:
+  - install
+  - check-lifetime-of-pwd
+  - check-reuse-of-pwd
+
+cmd_description:
+  - Setup the lifetime of password configuration.
+  - Checking the lifetime of password configuration.
+  - Checking the reuse of password configuration.

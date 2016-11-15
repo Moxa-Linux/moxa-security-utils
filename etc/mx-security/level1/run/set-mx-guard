@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       set-mx-guard:
+#		Setup mx-guard	
+#
+
+# mx-security config file
+MXSECURITY_CONF="/etc/mx-security/mx-security.conf.d/mx-security.conf"
+
+install () {
+	if [ ! -f /etc/systemd/system/multi-user.target.wants/mx-guard.service ]; then
+		cp -arf /etc/mx-security/level1/files/mx-guard.service /etc/systemd/system/multi-user.target.wants/
+	fi
+
+	if [ ! -f /sbin/mx-guard ]; then 
+		cp -arf /etc/mx-security/level1/files/mx-guard /sbin/mx-guard
+	fi
+
+	killall "mx-guard" &> /dev/null
+	nohup "mx-guard" "start" &> /etc/mx-security/nohup.out &
+}
+
+set-guard-interval () {
+	local current_interval=""
+	local new_interval=$1
+
+	if ! echo $new_interval | grep '^[[:digit:]]*$' > /dev/null; then
+		echo -n -e "The interval value is not a number."
+		exit 1
+	elif [[ $new_interval -lt 10 ]] || [[ $new_interval -gt 99999 ]]; then
+		echo -n -e "The interval number is invalid. It should be 10~99999"
+		exit 1
+	fi
+
+	# Get current TMOUT value
+	current_interval=$(grep "mx-guard" "$MXSECURITY_CONF" | awk '{print $2}' | cut -d= -f2)
+	sed -i "s/mx-guard interval=${current_interval}/mx-guard interval=${new_interval}/" "$MXSECURITY_CONF"
+	echo -n -e "Set interval value."
+}
+
+get-guard-interval () {
+	# Clear the variables
+	interval=""
+		
+	# Get variable info from config file.
+	interval=$(grep "mx-guard" "$MXSECURITY_CONF" | awk '{print $2}' | cut -d= -f2)
+	if ! echo $interval | grep '^[[:digit:]]*$' > /dev/null; then
+		echo -n -e "The interval value is not a number."
+		exit 1
+	elif [[ $interval -lt 10 ]] || [[ $interval -gt 99999 ]]; then
+		echo -n -e "The interval number is invalid. (10 ~ 99999)"
+		exit 1
+	fi
+
+	echo "The interval value = $interval"
+	echo -n -e "Get interval value."
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	set-guard-interval)
+		set-guard-interval $2
+		;;
+	get-guard-interval)
+		get-guard-interval
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

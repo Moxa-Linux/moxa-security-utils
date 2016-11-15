@@ -1,0 +1,23 @@
+name: Resource Management
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall provide the capability to limit the use of resources by security functions to prevent resource exhaustion.
+
+design_guide: Moxa host-based devices provide process priority changing, QoS Scheduling mechanism and ToS, CoS Mapping to manage network resource.
+
+solution: Make sure fail2ban, iproute2 packages are installed.
+
+package:
+  - fail2ban
+  - iptables
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

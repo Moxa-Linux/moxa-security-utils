@@ -1,0 +1,31 @@
+name: Human User, Process and Device Identification and Authentication
+
+req_category: Identification-and-Authentication-Control
+
+requirement: If Moxa devices provide user access, Moxa devices shall provide the capability to identify and authenticate each user at all access portals. For an access portal without authenticated mechanism (e.g. Industrial Protocols), it shall provide the capability to be disabled.
+
+design_guide: Moxa device shall provide login authentication at all access portals before access this device.
+
+solution: Make sure login, base-passwd, passwd, libpam-modules packages are installed. Turn off SNMP v1, v2c view and enable SNMP v3 feature. Enable apache authentication mechanism. Disable snmpd and apache2 services by default.
+
+package:
+  - apache2
+  - snmpd
+  - login
+  - base-passwd
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+    - snmpd.service
+    - apache2.service
+
+run: CR1.1
+
+cmd:
+  - install
+
+cmd_description:
+  - Turn off SNMP v1, v2c view and enable SNMP v3 feature. Enable apache authentication mechanism..
+

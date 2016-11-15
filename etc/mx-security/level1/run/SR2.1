@@ -1,0 +1,287 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.1:
+#		Wireless Access Restrictions
+#	Commands:
+#		1. install
+#		2. check-wireless-restrictions
+#		3. set-wireless-restrictions
+#
+
+# Congiuration File
+MXSECURITY_CONF="/etc/mx-security/mx-security.conf.d/mx-security.conf"
+IPTABLES_CONF="/etc/mx-security/mx-security.conf.d/iptables"
+WIRELESS_ALLOW_CONF="/etc/mx-security/mx-security.conf.d/wireless_allow.conf"
+
+# Global variable
+wl_restrict=""
+ssh_port=""
+
+### Get wl_restrict variable from mx-security config file ###
+get_wl_restrict_val () {
+	# Clear the variables
+	local val_info=""
+	wl_restrict=""
+	
+	# Get variable info from config file.
+	wl_restrict=$(grep "wl_restrict" "$MXSECURITY_CONF" | awk '{print $2}' | cut -d= -f2)
+	case $wl_restrict in
+		0|1|2)
+			return 0
+			;;
+		*)
+			echo -n -e "The variable is invalid."
+			exit 1
+			;;
+	esac
+}
+
+### Get ssh_port value from sshd_config ###
+get_ssh_port_val () {
+	ssh_port=""
+	
+	ssh_port=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+	if ! echo $ssh_port | grep '^[[:digit:]]*$' > /dev/null; then
+		echo -n -e "The SSH port value is not a number."
+		exit 1
+	elif [[ $ssh_port -lt 0 ]] || [[ $ssh_port -gt 99999 ]]; then
+		echo -n -e "The SSH port number is invalid."
+		exit 1
+	fi
+}
+
+install () {
+	# Write the new wl_restrict to config file and then setup the settings.
+	case "$wl_restrict" in
+		0)
+			echo -n -e "Does not allow user control the device by ssh via wireless interface."
+			set_wl_restrict_mode_1
+			;;
+		1)
+			echo "Please edit /etc/mx-security/mx-security.conf.d/wireless_allow file to manage allow ip list."
+			echo -n -e "Only allow the specified user to control the device by ssh via wireless interface."
+			set_wl_restrict_mode_2
+			;;
+		2)
+			echo -n -e "Allow all users to control the device by ssh via wireless interface."
+			clear_iptables
+			;;
+		*)
+			echo -n -e "The parameter is incorrect."
+			exit 1
+			;;
+	esac	
+}
+
+set_wl_restrict_mode_1 () {
+	local interface=""
+	
+	# Clear all the SR2.1 related iptables setting
+	clear_iptables
+
+	# Disallow user control the device by ssh via wireless interface with iptables
+	for interface in $(ip link | awk '{print $2}'| grep -E 'wwan|wlan|ppp|usb' | cut -d: -f1)
+	do
+		# Add iptables rule with each wireless interface
+		if ! iptables -S | grep -E "${interface}.*${ssh_port}.*DROP" > /dev/null; then
+			iptables -I INPUT -p tcp -i $interface --dport $ssh_port -j DROP
+			echo "INPUT -p tcp -i $interface --dport $ssh_port -j DROP" >> $IPTABLES_CONF
+		fi	
+	done
+}
+
+check-wl-restrict () {
+	local interface=""
+
+	case $wl_restrict in
+		# Does not allow user control the device via wireless interface.(Only ethernet)
+		0)
+			echo -n -e "(Does not allow user control the device by ssh via wireless interface.)"
+	
+			# Check every wireless interface.
+			for interface in $(ip link | awk '{print $2}'| grep -E 'wwan|wlan|ppp|usb' | cut -d: -f1)
+		        do
+				# Check iptables rule with each wireless interface 
+		                if ! iptables -S | grep -E "${interface}.*${ssh_port}.*DROP" > /dev/null; then
+					echo -n -e "Couldn't detect iptables configuration."
+		                        exit 1
+		                fi
+		        done
+			;;
+		# Allow specified user
+		1)
+			echo -n -e "(Only allow the specified user to control the device by ssh via wireless interface.)"
+	                
+			# Check every wireless interface.
+			for interface in $(ip link | awk '{print $2}'| grep -E 'wwan|wlan|ppp|usb' | cut -d: -f1)
+	                do
+				# Check iptables rule with each wireless interface and IP address 
+				for ip_address in $(cat "$WIRELESS_ALLOW_CONF")
+				do
+		                        if ! iptables -S | grep -E "${interface}.*${ssh_port}.*DROP" | grep "$ip_address" > /dev/null; then
+	        	                	echo -n -e "Couldn't detect iptables configuration"
+	                	        	exit 1
+	                       		fi
+				done
+				
+				# Check iptables rule with wireless interface
+	                        if ! iptables -S | grep -E "${interface}.*${ssh_port}.*DROP" > /dev/null; then
+	                        	echo -n -e "Couldn't detect iptables configuration"
+	                        	exit 1
+	                       	fi
+	                done
+			;;	
+		# Allow all users
+		2)
+			echo -n -e "(Allow all users to control the device by ssh via wireless interface.)"
+			if [ $(cat ${IPTABLES_CONF} | wc -l) -gt 0 ] > /dev/null; then
+				echo -n -e "There are still some iptables rules."
+				exit 1
+			fi
+			;;
+		*)
+			echo -n -e "The parameter is incorrect."
+			exit 1
+			;;
+	esac
+}
+
+clear_iptables () {
+	local num_of_rules=""
+	local rule=""
+
+	# Get iptables rule and then remove it.
+	num_of_rules=`cat "${IPTABLES_CONF}" | wc -l`
+	for (( i=1 ; i<=$num_of_rules; i++))
+	do
+	        rule=$(cat "$IPTABLES_CONF" | head -n $i | tail -n1)
+		sed -i "/$rule/d" "$IPTABLES_CONF"
+		iptables -D $rule &> /dev/null
+	done
+}
+
+set_wl_restrict_to_config () {
+	local current_wl_restrict=""
+	local new_wl_restrict=$1
+
+	case $new_wl_restrict in 
+		0|1|2)
+			# Write down the configuraiton tag
+			current_wl_restrict=$(grep "wl_restrict=" "$MXSECURITY_CONF" | cut -d= -f2)
+			sed -i "s/SR2.1 wl_restrict=${current_wl_restrict}/SR2.1 wl_restrict=${new_wl_restrict}/" "$MXSECURITY_CONF"
+			;;
+		*)
+			echo -n -e "The parameter is incorrect."
+			exit 1
+			;;
+	esac
+}
+
+set-wl-restrict () {
+	local new_wl_restrict=$1
+
+	# Write the new wl_restrict to config file and then setup the settings.
+	case "$new_wl_restrict" in
+		0)
+			echo -n -e "Does not allow user control the device by ssh via wireless interface."
+			set_wl_restrict_to_config $new_wl_restrict
+			get_wl_restrict_val
+			set_wl_restrict_mode_1
+			;;
+		1)
+			echo "Please edit /etc/mx-security/mx-security.conf.d/wireless_allow file to manage allow ip list."
+			echo -n -e "Only allow the specified user to control the device by ssh via wireless interface."
+			
+			set_wl_restrict_to_config $new_wl_restrict
+			get_wl_restrict_val
+			set_wl_restrict_mode_2
+			;;
+		2)
+			echo -n -e "Allow all users to control the device by ssh via wireless interface."
+			set_wl_restrict_to_config $new_wl_restrict
+			get_wl_restrict_val
+			clear_iptables
+			;;
+		*)
+			echo -n -e "The parameter is incorrect."
+			exit 1
+			;;
+	esac	
+}
+
+set_wl_restrict_mode_2 () {
+	local ip_address=""
+	local interface=""
+	local rule=""
+			
+	clear_iptables
+
+	# Sacn each wireless interface
+	for interface in $(ip link | awk '{print $2}'| grep -E 'wwan|wlan|ppp|usb' | cut -d: -f1)
+        do
+		# Scan each IP address that is in the list.
+		for ip_address in $(cat "$WIRELESS_ALLOW_CONF")
+		do
+			# Add the IP address into iptables
+                        iptables -I INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j DROP
+	                echo "INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j DROP" >> $IPTABLES_CONF
+		done
+		# Add the wireless interface  iptables rule.
+                iptables -A INPUT -p tcp -i $interface --dport $ssh_port -j DROP
+	        echo "INPUT -p tcp -i $interface --dport $ssh_port -j DROP" >> $IPTABLES_CONF
+        done
+}
+
+get-wl-restrict () {
+	case $wl_restrict in
+		0)
+			echo "Does not allow user control the device by ssh via wireless interface."
+			;;
+		1)
+			echo "Only allow the specified user to control the device by ssh via wireless interface."
+			echo "The allow user IP address list:"
+			cat "$WIRELESS_ALLOW_CONF"
+			;;
+		2)
+			echo "Allow all users to control the device by ssh via wireless interface."
+			;;
+		*)
+			echo -n -e "Wrong option."
+			exit 1
+			;;
+	esac
+	
+	echo -n -e "Get information."
+}
+
+# Get Values
+get_wl_restrict_val
+get_ssh_port_val
+
+case "$1" in
+	install)
+		install
+		;;
+	check-wl-restrict)
+		check-wl-restrict
+		;;
+	set-wl-restrict)
+		set-wl-restrict $2
+		;;
+	get-wl-restrict)
+		get-wl-restrict
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

@@ -1,0 +1,38 @@
+# This requirement's name
+name: Human User, Process and Device Identification and Authentication
+
+# Description of this requirement
+requirement: If Moxa devices provide user access, Moxa devices shall provide the capability to identify and authenticate each user at all access portals. For an access portal without authenticated mechanism (e.g. Industrial Protocols), it shall provide the capability to be disabled.
+
+# The design guide of this requirement
+design_guide: Moxa device shall provide login authentication at all access portals before access this device.
+
+# What does this requirement do
+solution: Disable snmpd and apache
+
+# If there is any necessary tool. Please write down in the following section.
+package:
+  - package01
+  - package02
+  - package03
+
+# If there is any service that need to be enabled or disabled, please write down in this section.
+service:
+  enable:
+    - service01
+    - service02
+  disable:
+    - snmpd.service
+    - apache2.service
+
+# If there is an execution file in the run directory, please write down the name of the file and finished this section.
+run: CR1.1
+cmd:
+  - install
+  - set-pwd-retry-times
+  - set-pwd-retry-time
+cmd_description:
+  - This is the main function that used to switch security level.
+  - Change the password edit value.
+  -  
+

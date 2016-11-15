@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR1.10:
+#		Session Lock	
+#	Commands:
+#		1. install
+#		2. check-console-timeout
+#		3. check-ssh-timeout
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "profile" "level1"
+}
+
+#set_val_to_target () {
+#	local new_console_timeout=$1
+#	local old_console_timeout=""
+#
+#	
+#}
+
+set-console-timeout () {
+	local new_console_timeout=$1
+	check_value "$new_console_timeout" "10" "999"
+	set_config_val "SR1.10" "TMOUT" "$new_console_timeout"
+	echo -n -e "Set console timeout as $new_console_timeout seconds."
+}
+
+get-console-timeout () {
+	local console_timeout=""
+	console_timeout=$(get_config_val "SR1.10" "TMOUT")
+	echo -n -e "$console_timeout seconds."
+}
+
+check-console-timeout () {
+	if ! grep "readonly TMOUT=" "/etc/profile" > /dev/null; then
+		echo -n -e "The session timeout is inconsistent with mx-security configuration."
+		exit 1
+	fi
+}
+
+case "$1" in
+	install)
+		install
+		;;
+#	set-console-timeout)
+#		set-console-timeout $2
+#		;;
+#	get-console-timeout)
+#		get-console-timeout
+#		;;
+	check-console-timeout)
+		check-console-timeout
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

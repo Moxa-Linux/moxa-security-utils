@@ -1,0 +1,23 @@
+name: Audit Reduction and Report Generation
+
+req_category: Timely-Response-to-Event
+
+requirement: All Moxa devices shall allow external access to the audit logs.
+
+design_guide: Moxa host-based device Logs provide the external accessing options, such as HTTPS, FTP, ..., for authenticated users.
+
+solution: Make sure ssh package is installed.
+
+package:
+  - ssh
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

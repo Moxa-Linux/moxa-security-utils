@@ -1,0 +1,25 @@
+name: Authenticator Management
+
+req_category: Identification-and-Authentication-Control
+
+requirement: Except the requirement of level 1 and level 2, the authenticators on which the Moxa devices rely shall be protected via hardware encryption.
+
+design_guide: The authenticators on which the Moxa devices rely shall be protected via TPM.
+
+solution: Make sure there is a TPM driver and tpm-tools is installed.
+
+package:
+  - tpm-tools
+
+service:
+  enable:
+  disable:
+
+run: CR1.4
+
+cmd:
+ check-tpm
+
+cmd_description:
+ Checking tpm driver and tpm device node are exist or not.
+

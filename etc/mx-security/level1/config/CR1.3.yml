@@ -1,0 +1,25 @@
+name: Identifier Management
+
+req_category: Identification-and-Authentication-Control
+
+requirement: If Moxa devices provide user access, Moxa devices shall support the management of identifiers by user, group, role, and/or system interface.
+
+design_guide: Moxa host-based system default shall support the management of identifier by default user. Linux: default user, moxa, who can own supervisor's authority by sudo command. Windows: Create by user at the first time login.
+
+solution: Make sure base-passwd, passwd and sudo package are installed.
+
+package:
+  - base-passwd
+  - passwd
+  - sudo
+
+service:
+  enable:
+  disable:
+
+run: 
+
+cmd:
+
+cmd_description:
+

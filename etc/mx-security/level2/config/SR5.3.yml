@@ -1,0 +1,22 @@
+name: Security Function Isolation 
+
+req_category: Restrict-Data-Flow
+
+requirement: All Moxa devices shall isolate security from non-security functions.
+
+design_guide: Please reference SR 5.2.
+
+solution: Same as level1 Application Partitioning.  
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

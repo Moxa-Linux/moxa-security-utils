@@ -1,0 +1,25 @@
+name: Public Key Infrastructure Certificates
+
+req_category: Data-Confidentiality
+
+requirement: Where public key cryptography is utilized, all Moxa devices shall interface with existing public key infrastructure under an appropriate certificate policy or obtain public key certificates under an appropriate certificate policy from an approved service provider.
+
+design_guide: Moxa host-based system support OpenSSL function to validate certificates, and provide certification import function to control and management using private key in certification and identify users.
+
+solution: Make sure openssl is installed. 
+
+package:
+  - openssl
+
+service:
+  enable:
+  disable:
+
+run: SR4.5
+
+cmd:
+  - openssl
+
+cmd_description:
+  - Checking the openssl package.
+

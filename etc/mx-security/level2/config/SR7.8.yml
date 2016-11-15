@@ -1,0 +1,24 @@
+name: IACS Component Inventory 
+
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall provide the ability to report the current list of installed applications and their associated properties (identification, capability, revision level, etc.).
+
+design_guide: Moxa host-based devices shall provide the ability to report the current list of installed applications and their associated properties (e.g. model name, capability and hardware/software version).
+
+solution: Make sure dpkg and systemd packages are installed. 
+
+package:
+  - dpkg
+  - systemd
+
+service:
+  enable:
+  disable:
+
+run: 
+
+cmd:
+
+cmd_description:
+

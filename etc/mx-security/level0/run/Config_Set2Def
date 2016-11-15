@@ -1,0 +1,151 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       Config_Set2Def:
+#		Restore common-auth common-password sshd_config profile to default configuration.	
+#	Commands:
+#		1. install
+#		2. check-common-auth
+#		3. check-common-password
+#		4. check-profile
+#		5. check-sshd_config
+#		6. check-audit
+#
+
+### Include ###
+. /etc/mx-security/mxsec_functions
+
+### Backup and install all the default configrations ###
+install () {
+	check_package "libpam"
+	[[ X"$?" == X"0" ]] && backup_file "common-password" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "common-password" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	
+	check_package "libpam"
+	[[ X"$?" == X"0" ]] && backup_file "common-auth" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "common-auth" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	
+	check_package "ssh"
+	[[ X"$?" == X"0" ]] && backup_file "sshd_config" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "sshd_config" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	systemctl "restart" "ssh.service"
+	
+	backup_file "profile" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "profile" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	
+	check_package "auditd"
+	[[ X"$?" == X"0" ]] && backup_file "auditd.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "auditd.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	systemctl "restart" "auditd.service"
+
+	check_package "login"
+	[[ X"$?" == X"0" ]] && backup_file "login" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "login" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "integrit"
+	[[ X"$?" == X"0" ]] && backup_file "integrit.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "integrit.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "snmpd"
+	[[ X"$?" == X"0" ]] && backup_file "snmpd.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "snmpd.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "apache2"
+	[[ X"$?" == X"0" ]] && backup_file "000-default.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "000-default.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "apache2"
+	[[ X"$?" == X"0" ]] && backup_file ".htpasswd" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file ".htpasswd" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "login"
+	[[ X"$?" == X"0" ]] && backup_file "login.defs" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "login.defs" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+
+	check_package "login"
+	[[ X"$?" == X"0" ]] && backup_file "limits.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+	install_file "limits.conf" "level0"
+	[[ X"$?" != X"0" ]] && exit 1	
+}
+
+### Check all the configurations ###
+check-common-auth () {
+	diff /etc/mx-security/level0/files/common-auth /etc/pam.d/common-auth &> /dev/null
+	[[ X"$?" != X"0" ]] && exit 1
+}
+
+check-common-password () {
+	diff /etc/mx-security/level0/files/common-password /etc/pam.d/common-password &> /dev/null
+	[[ X"$?" != X"0" ]] && exit 1
+}
+
+check-profile () {
+	diff /etc/mx-security/level0/files/profile /etc/profile &> /dev/null
+	[[ X"$?" != X"0" ]] && exit 1
+}
+
+check-sshd_config () {
+	diff /etc/mx-security/level0/files/sshd_config /etc/ssh/sshd_config &> /dev/null
+	[[ X"$?" != X"0" ]] && exit 1
+}
+
+check-audit () {
+	diff /etc/mx-security/level0/files/auditd.conf /etc/audit/auditd.conf &> /dev/null
+	[[ X"$?" != X"0" ]] && exit 1
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-common-auth)
+		check-common-auth
+		;;
+	check-common-password)
+		check-common-password
+		;;
+	check-profile)
+		check-profile
+		;;
+	check-sshd_config)
+		check-sshd_config
+		;;
+	check-audit)
+		check-audit
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

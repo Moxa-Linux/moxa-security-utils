@@ -1,0 +1,25 @@
+name: Use of Cryptography
+
+req_category: Data-Confidentiality
+
+requirement: For information which the organization has determined requires cryptographic protection, the IACS shall implement and support cryptographic mechanisms.
+
+design_guide: Moxa host-based device provide OpenSSL function to support cryptographic security mechanisms. Strongly recommended not to use some of the following cryptographic algorithms considered no longer secure: 1. Ciphers: DES, IDEA, RC2, RC4 2. Cryptographic hash functions: MD4, MD2, SHA-1 3. Public-key cryptography: RSA
+
+solution: Make sure openssl is installed. 
+
+package:
+  - openssl
+
+service:
+  enable:
+  disable:
+
+run: SR4.4
+
+cmd:
+  - check-openssl-package
+
+cmd_description:
+  - Checking the openssl package.
+

@@ -1,0 +1,27 @@
+name: Setup mx-guard
+
+req_category: N/A
+
+requirement: N/A
+
+design_guide: N/A
+
+solution: Install mx-security daemon mx-guard to monitor device.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: set-mx-guard
+
+cmd:
+  - install
+  - set-guard-interval [TIME]
+  - get-guard-interval 
+
+cmd_description:
+  - Install mx-security daemon mx-guard to monitor device.
+  - Set checking interval time.\The mx-security daemon will scan once every [TIME](10~99999) minutes.
+  - Get checking interval time.

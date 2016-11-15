@@ -1,0 +1,27 @@
+name: IACS Backup
+
+req_category: Network Resource Availability
+
+requirement: Use encryption to protect during backup process
+
+design_guide: The utility shall use encryption to protect during backup process.
+
+solution: Provide a feature to encryption backup files during the process.
+
+package:
+  - tar
+  - openssl
+
+service:
+  enable:
+  disable:
+
+run: SR7.3
+
+cmd:
+  - set-system-backup-encryption [USB DIR PATH]
+  - set-restore-system-encryption [FILE PATH]
+
+cmd_description:
+  - Backup the whole root file system to usb device with encryption.
+  - Restore the whole root file system to usb device with encryption.

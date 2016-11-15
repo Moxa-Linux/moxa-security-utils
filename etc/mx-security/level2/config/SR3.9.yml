@@ -1,0 +1,23 @@
+name: Session integrity
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall provide mechanisms to protect the authenticity of communications sessions.
+
+design_guide: Moxa host-based devices shall authenticate and maintain an unique ID for each communications sessions. For industry protocols or stateless communication (HTTP), there're enable/disable options.
+
+solution: The system already provides unique ID for each session. Make sure systemd package is installed. 
+
+package:
+  - systemd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

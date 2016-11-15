@@ -1,0 +1,26 @@
+name: Information Flow Enforcement 
+
+req_category: Restrict-Data-Flow
+
+requirement: All Moxa devices either directly or through a compensating security mechanism shall enforce assigned authorization to functions and data within the device. (Compensating security mechanism: Removed in 2013)
+
+design_guide: Moxa host-based devices should authenticate and authorize the accessing of the functions and data.
+
+solution: Make sure login, base-passwd, passwd, libpam-modules packages are installed. 
+
+package:
+  - login
+  - base-passwd
+  - passwd
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

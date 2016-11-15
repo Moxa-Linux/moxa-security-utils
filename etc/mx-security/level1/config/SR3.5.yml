@@ -1,0 +1,21 @@
+name: Email use in the control system 
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall provide the capability to prevent the email system from being used to introduce malware that can be used to create security problems or launch attacks on the control system nodes.
+
+design_guide: If Moxa host-based devices support email client, they shall provide to enable/disable options to prevent themselves from being used to introduce malware that can be used to create security problems or launch attacks on the control system nodes. Moxa host-based system may support to install the malicious detection subsystem for monitoring the malware introducing.
+
+solution: Built-in 
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

@@ -1,0 +1,25 @@
+name: Concurrent Session Control
+
+req_category: Use Control
+
+requirement: All Moxa devices shall provide the capability to limit the number of concurrent sessions per interface for any given user (human, software process or device).
+
+design_guide: Moxa host-based devices support to configure for the number of the concurrent sessions per access portal.
+
+solution: The system support to configure SSH concurrent sessions.(default 3 maxlogin)
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: SR2.4
+
+cmd:
+  - install
+  - check-concurrent-session
+
+cmd_description:
+  - Setup the lifetime of password configuration.
+  - Checking the concurrent session control configuration.

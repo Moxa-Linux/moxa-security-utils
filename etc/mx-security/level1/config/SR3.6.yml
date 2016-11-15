@@ -1,0 +1,23 @@
+name: Information input restrictions 
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall only accept input from authorized entities as defined by prevailing Access Control policies, except for the purposes of initial authentication.
+
+design_guide: Moxa host-based devices provide login at all access portals. For industrial protocols, there're enable/disable options in the system configuration.
+
+solution: Make sure systemd package is installed.
+
+package:
+  - systemd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

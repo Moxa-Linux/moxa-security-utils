@@ -1,0 +1,31 @@
+name: Restore configuration file to default
+
+requirement: N/A
+
+design_guide: N/A
+
+solution: Restore common-auth common-password sshd_config profile to default configuration.	
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: Config_Set2Def
+
+cmd:
+  - install
+  - check-common-auth
+  - check-common-password
+  - check-profile
+  - check-sshd_config
+  - check-audit
+
+cmd_description:
+  - Install the prepared common-auth common-password sshd_config files.	
+  - Check whether the common-auth configuraiotn is default setting or not.
+  - Check whether the common-password configuraiotn is default setting or not.
+  - Check whether the profile configuraiotn is default setting or not.
+  - Check whether the sshd_config configuraiotn is default setting or not.
+  - Check whether the audit configuraiotn is default setting or not.

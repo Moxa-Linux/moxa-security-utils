@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR2.7:
+#		Response to Audit Processing Faliure
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "auditd.conf" "level1"	
+	systemctl "restart" "auditd.service"
+}
+
+check-max_log_file () {
+	if ! grep "^max_log_file" "/etc/audit/auditd.conf"  > /dev/null; then
+		echo -n -e "Couldn't detect the max_log_file configuration"
+		exit 1
+	fi	
+}
+
+check-num_logs () {
+	if ! grep "^num_logs" "/etc/audit/auditd.conf"  > /dev/null; then
+		echo -n -e "Couldn't detect the num_logs configuration"
+		exit 1
+	fi	
+}
+
+#check-auditd () {
+#	if ! systemctl status auditd.service | grep "Active: active" > /dev/null; then
+#		echo -n -e "auditd.service is not active."
+#		exit 1	
+#	fi	
+#}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-max_log_file)
+		check-max_log_file
+		;;
+	check-num_logs)
+		check-num_logs
+		;;
+#	check-auditd)
+#		check-auditd
+#		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

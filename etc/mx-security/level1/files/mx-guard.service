@@ -1,0 +1,8 @@
+[Unit]
+Description=Moxa Security Utils Daemon Initial Setting
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/mx-guard start &
+ExecStop=/sbin/mx-guard stop
+

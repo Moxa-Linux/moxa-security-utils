@@ -1,0 +1,26 @@
+name: IACS Backup 
+
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall support the mechanism to get critical information. (e.g., system config ...)
+
+design_guide: Moxa host-based devices shall provide the ability to backup and restore critical files.
+
+solution: Provide an easy backup mechanism that can backup whole root file system to USB disk. Use set2def to replace restore mechanism. Make sure tar package is installed.
+
+package:
+  - tar
+
+service:
+  enable:
+  disable:
+
+run: SR7.3
+
+cmd:
+  - set-system-backup-normal 
+  - set-restore-system
+
+cmd_description:
+  - Backup the whole root file system
+  - Restore the whole root file system

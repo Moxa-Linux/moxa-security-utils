@@ -1,0 +1,21 @@
+name: Malicious code protection 
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall employ malicious code protection mechanisms, if they support code installation/import.
+
+design_guide: Moxa host-based device shall provide capability to scan the mobile codes in order to avoid the malicious tampering.
+
+solution: Same as level1 
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

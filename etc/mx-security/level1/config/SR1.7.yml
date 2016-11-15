@@ -1,0 +1,27 @@
+name: Unsuccessful Login Attempts
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to enforce a limit of a configurable number of consecutive invalid access attempts by any user during a configurable time period.
+
+design_guide: Moxa host-based system may limit the numbers of the unsuccessful login attempts. Lock out the user in a period if the unsuccessful attempts number over the maximum times. Unlock the user after time is up.
+
+solution: Limit the number of the unsuccessful login (Default: 3 times). Lock out the user in a period and unlock the user after time's up (Default: 120 seconds). Make sure libpam-modules is installed.
+
+package:
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+
+run: SR1.7
+
+cmd:
+  - install
+  - check-login-attempt
+
+cmd_description:
+  - Setup the unsuccessful Login Attempts configuration. 
+  - Checking the unsuccessful Login Attempts configuration.
+

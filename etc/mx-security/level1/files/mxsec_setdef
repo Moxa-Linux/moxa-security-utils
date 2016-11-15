@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#ignore signal
+trap '' 1 2 3 6
+
+TMP_FS=/dev/shm/debian
+REAL_FS=rfs
+
+# Get rootfile system partition from cmdline. e.g. /dev/mmcblk0p2
+ROOT_PART=$(cat /proc/cmdline)
+ROOT_PART="${ROOT_PART##*root=}"
+ROOT_PART="${ROOT_PART%% *}"
+
+# Strip the partition number to fetch sd node e.g. /dev/mmcblk0
+SD_NODE="${ROOT_PART%%p2}"
+
+# prepare for default rootfs
+/etc/init.d/udev stop
+
+mkdir -p ${TMP_FS} 2> /dev/null
+# mount backup partition to ${TMP_FS}
+mount ${SD_NODE}p3 ${TMP_FS} 2> /dev/null
+
+mkdir -p ${TMP_FS}/proc/ ${TMP_FS}/sys/ ${TMP_FS}/dev/  ${TMP_FS}/${REAL_FS} 2> /dev/null
+mount -t proc proc ${TMP_FS}/proc/
+mount -t sysfs sys ${TMP_FS}/sys/
+mount -o bind /dev ${TMP_FS}/dev/
+mount ${ROOT_PART} ${TMP_FS}/${REAL_FS}
+
+USB_DIR=$(df -h | grep /dev/sd | awk '{print $6}')
+USB_DEV=$(df -h | grep /dev/sd | awk '{print $1}')
+mkdir -p ${TMP_FS}/${USB_DIR}
+mount $USB_DEV ${TMP_FS}/${USB_DIR}
+
+chroot ${TMP_FS} /setdef-chroot_mxsec  /bin/ash
+sync
+echo "!!! Now the system is going to reboot. !!!"
+/sbin/reboot -d -f -i
+

@@ -1,0 +1,24 @@
+name: Protection of Audit Information
+
+req_category: Use-Control
+
+requirement: All Moxa devices shall protect audit information and audit tools from unauthorized access, modification, and deletion.
+
+design_guide: Moxa host-based device shall disallow the user who has not authenticated to access the audit records.
+
+solution: Only root account allows to access audit records. Make sure base-passwd and passwd packages are installed. 
+
+package:
+  - base-passwd
+  - passwd
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

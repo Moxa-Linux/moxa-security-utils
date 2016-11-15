@@ -1,0 +1,21 @@
+name: IACS Recovery and Reconstitution
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall provide mechanisms for recovery and reconstitution to a known secure state after a disruption or failure.
+
+design_guide: Moxa host-based devices shall provide the ability to recover to a known secure state after disruption or failure.
+
+solution: Use set2def to recover system to default and use mx-security tool to setup security status.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

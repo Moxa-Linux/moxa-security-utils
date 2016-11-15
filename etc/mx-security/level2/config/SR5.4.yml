@@ -1,0 +1,24 @@
+name: Boundary Protection 
+
+req_category: Restrict-Data-Flow
+
+requirement: All Moxa devices shall deny network traffic by default and allows network traffic by exception.
+
+design_guide: Moxa host-based devices provide firewall function to restrict network traffic.
+
+solution: Make sure fail2ban, iproute2 packages are installed. 
+
+package:
+  - fail2ban
+  - iproute2
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

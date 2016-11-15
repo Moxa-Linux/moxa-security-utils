@@ -1,0 +1,36 @@
+name: Auditable Events
+
+req_category: Use-Control
+
+requirement: All Moxa devices shall provide the capability to generate audit records relevant to security for the following categories: 1. access control; 2. request errors; 3. control system events; 4. backup and restore event; 5. configuration changes; 6. audit log events. Individual audit records shall include: 1. timestamp; 2. source (originating device, software process or human user account); 3. category; 4. type; 5. event ID; 6. event result.
+
+design_guide: Moxa host-based devices generate at least the following events: 1. login success; 2. login failure; 3. backup and restore event (i.e., import/export configuration); 4. configuration change; 5. upgrade FW; 6. Network link down; 7. Network link up; 8. (optional) clear log; All events should include: 1. timestamp; 2. user ID; 3. Event type;
+
+solution: Generate the following events: 1. Login success or failure. (log message) 2. Backup or restore. (log message) 3. Configuration (integrit tool) 4. Upgrade firmware. (log message) 5. Network link down or up. (dmesg) Make sure rsyslog, integrit, acct packages are installed and rsyslog service is running. 
+
+package:
+  - rsyslog
+  - integrit
+  - acct
+
+service:
+  enable:
+    - rsyslog.service
+  disable:
+
+run: SR2.5
+
+cmd:
+  - get-login-log [FILTER]
+  - get-package-log [FILTER]
+  - get-network-log 
+  - check-log-file
+  - check-log-config-setting
+
+cmd_description:
+  - Get the login success or failure message.\[FILTER] is the keyword that you want to seach in the log message.
+  - Get debian package related message, such as install, remove packages.\[FILTER] is the keyword that you want to seach in the log message.
+  - Get network interface related message, such as link up, link down.
+  - Checking whether the authentication, kernel and package log files are exist or not.
+  - Checking whether the log setting is trun on or not.
+

@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       CR1.5:
+#		Strength of Password-based Authentication
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "common-password" "level1"
+}
+
+check-strength-of-pwd () {
+	if ! grep "minlen=4 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1" "/etc/pam.d/common-password" > /dev/null; then
+		echo -e -n "Couldn't detect the strength of password configuration or there is something worng."
+		exit 1
+	fi
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-strength-of-pwd)
+		check-strength-of-pwd
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

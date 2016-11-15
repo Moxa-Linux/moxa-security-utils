@@ -1,0 +1,27 @@
+name: Previous Login Notification
+
+req_category: Identification-and-Authentication-Control
+
+requirement: All Moxa devices shall provide the capability to notify the user, upon successful login, of the date and time of the last login, and the number of unsuccessful login attempts since the last successful login.
+
+design_guide: Moxa host-based devices provide a notification message upon successful login, include date and time of the last login and the number of unsuccessful login attempts since the last successful login.
+
+solution: Setup login notification message upon successful login. Make sure libpam-modules package is installed.
+
+package:
+  - libpam-modules
+
+service:
+  enable:
+  disable:
+
+run: SR1.9
+
+cmd:
+  - install
+  - check-login-notify
+
+cmd_description:
+  - Add the login log message into the welcome message by PAM configuration. 
+  - Checking the configuration of welcome message with login log message.
+

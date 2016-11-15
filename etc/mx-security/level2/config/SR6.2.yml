@@ -1,0 +1,24 @@
+name: IACS Monitoring Tools and Techniques
+
+req_category: Timely-Response-to-Event
+
+requirement: All Moxa devices shall have the capability of providing audit records as required by SR 2.12. In addition, they shall support the use of local tools and techniques to continuously monitor control device activity in order to detect attacks in a timely fashion and provide identification of unauthorized use of the device. This includes monitoring inbound and outbound communications for unusual or unauthorized activities or conditions.
+
+design_guide: MOXA host-based device provide SYSLOG to report audit records for system-level monitoring tool.
+
+solution: Make sure rsyslog package is installed and it's service is enabled. Provide a mx-guard daemon to check system security status. 
+
+package:
+  - rsyslog
+
+service:
+  enable:
+    - rsyslog.service
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

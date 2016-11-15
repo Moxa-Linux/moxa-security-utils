@@ -1,0 +1,31 @@
+name: Software and information integrity
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall provide the capability to perform or support integrity checks on software, configuration and other information as well as the recording and reporting of the results of these checks.
+
+design_guide: Moxa host-based devices provide the integrity check utility for 1. Generating checksum, hash, ... , for checking software, configuration and other information integrity. 2. The utility should provide log of the result of these checks.
+
+solution: Make sure integrit package is installed and provide a feature to check the root file system's integrity. 
+
+package:
+  - integrit
+
+service:
+  enable:
+  disable:
+
+run: SR3.4
+
+cmd:
+  - install
+  - set-integrity-database
+  - check-integrity-database
+  - get-integrity-info
+
+cmd_description:
+  - Setup the default integrit config and then initial the file integrity database.
+  - Setup the integrity database by using integrit tool.
+  - Checking the system file's integrity database.
+  - Use integrit tool to get system file integrity information.
+

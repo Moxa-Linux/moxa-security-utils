@@ -1,0 +1,25 @@
+name: Time Stamps
+
+req_category: Use Control
+
+requirement: Time synchronization
+
+design_guide: The utility shall provide NTP mechanism for Time synchronization and the time source is consistent.
+
+solution: Make sure ntpdate package is installed.
+
+package:
+  - ntpdate
+
+service:
+  enable:
+  disable:
+
+run: SR2.8
+
+cmd:
+  - check-time-source
+
+cmd_description:
+  - Make sure the time source is consistent.
+

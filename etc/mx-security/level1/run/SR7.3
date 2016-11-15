@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+
+. /etc/mx-security/mxsec_functions
+
+set-system-backup-normal () {
+	local backup_path=$1
+	local backup_time=$(date +"%y%m%d%H%M%S")
+
+	# Check whether the backup path is in USB dir or not
+	check_backup_path $backup_path
+	
+	echo "The utility is going to backup the whole root file system."
+
+	cd /
+	ls / | grep -v -E '(proc|sys|dev|mnt|run|media)' | xargs tar -zcvf ${backup_path}/backup_${backup_time}.tar.gz
+	md5sum "${backup_path}/backup_${backup_time}.tar.gz" >> /etc/mx-security/mx-security.conf.d/backup_checksum
+}
+
+set-restore-system () {
+	backup_file_path=$1
+
+	check_backup_path $backup_file_path
+	check_file_checksum $backup_file_path
+	create_restore_process "$backup_file_path"
+	install_file "mxsec_setdef" "level1"
+	bash /sbin/mxsec_setdef
+}
+
+case "$1" in
+	set-system-backup-normal)
+		set-system-backup-normal $2
+		;;
+	set-restore-system)
+		set-restore-system $2
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

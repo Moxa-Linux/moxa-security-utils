@@ -1,0 +1,32 @@
+name: Response to Audit Processing Faliure
+
+req_category: Use-Control
+
+requirement: All Moxa devices shall provide the capability to support appropriate actions in response to an audit processing failure according to commonly accepted industry practices and recommendation. Audit processing involves transmission, possible augmentation (such as, the addition of a timestamp) and persistent storage of the audit records. Audit processing failures include, for example, software or hardware errors, failures in the audit capturing mechanisms and audit storage capacity being reached or exceeded.
+
+design_guide: Moxa host-based devices support following methods for audit processing failure: 1. Overwrite oldest audit records; 2. Generate an alert audit processing failure notification.
+
+solution: Setup log message rotate feature and limit the maximum size of log file.(Each file 6MB) Make sure auditd, acct, rsyslog packages are installed and auditd.service is running.
+
+package:
+  - auditd
+  - acct
+  - rsyslog
+
+service:
+  enable:
+    - auditd.service
+  disable:
+
+run: SR2.7
+
+cmd:
+  - install
+  - check-max_log_file
+  - check-num_logs
+
+cmd_description:
+  - Install the audit configuration file.
+  - Checking the max size of one log file setting in auditd configuration.
+  - Checking the number of log files setting in auditd configuration.
+

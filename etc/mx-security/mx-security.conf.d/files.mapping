@@ -1,0 +1,34 @@
+#############################################
+[stage] [file name] [file path]
+#############################################
+
+level0 auditd.conf /etc/audit/auditd.conf
+level0 common-auth /etc/pam.d/common-auth
+level0 common-password /etc/pam.d/common-password
+level0 profile /etc/profile
+level0 sshd_config /etc/ssh/sshd_config
+level0 login /etc/pam.d/login
+level0 integrit.conf /etc/integrit/integrit.conf
+level0 snmpd.conf /etc/snmp/snmpd.conf
+level0 000-default.conf /etc/apache2/sites-available/000-default.conf
+level0 .htpasswd /etc/apache2/.htpasswd
+level0 login.defs /etc/login.defs
+level0 limits.conf /etc/security/limits.conf
+
+level1 integrit.conf /etc/integrit/integrit.conf
+level1 snmpd.conf /etc/snmp/snmpd.conf
+level1 common-password /etc/pam.d/common-password
+level1 common-auth /etc/pam.d/common-auth
+level1 sshd_config /etc/ssh/sshd_config 
+level1 profile /etc/profile
+level1 000-default.conf /etc/apache2/sites-available/000-default.conf
+level1 .htpasswd /etc/apache2/.htpasswd
+level1 mxsec_setdef /sbin/mxsec_setdef
+level1 auditd.conf /etc/audit/auditd.conf
+
+level2 sshd_config /etc/ssh/sshd_config
+level2 login /etc/pam.d/login
+
+level2_plus login.defs /etc/login.defs
+level2_plus common-password /etc/pam.d/common-password
+level2_plus limits.conf /etc/security/limits.conf

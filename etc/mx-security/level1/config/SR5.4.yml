@@ -1,0 +1,23 @@
+name: Boundary Protection 
+req_category: Restrict-Data-Flow
+
+requirement: All Moxa devices shall monitor and control communications at zone boundaries.
+
+design_guide: Moxa host-based devices provide firewall feature for appropriate boundary protection.
+
+solution: Make sure iptables and openvpn packages are installed. 
+
+package:
+  - openvpn
+  - iptables
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

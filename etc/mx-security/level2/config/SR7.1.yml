@@ -1,0 +1,24 @@
+name: Denial of Service Protection 
+
+req_category: Network-Resource-Availability
+
+requirement: 1. All Moxa devices shall manage communication loads (e.g., rate limiting) to mitigate the effects of information flooding types of denial service events. 2. All Moxa devices shall restrict the ability of users to launch denial of service attacks against other device or networks.
+
+design_guide: Moxa host-based devices shall restrict the ability of users to launch denial of service attacks against other device or networks.
+
+solution: Make sure iptables, fail2ban packages are installed. 
+
+package:
+  - iptables
+  - fail2ban
+
+service:
+  enable:
+  disable:
+
+run: 
+
+cmd:
+
+cmd_description:
+

@@ -1,0 +1,810 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       mx-security:
+#               Moxa cyber security utils.
+#
+
+# mx-security configuration file path
+CONFIG_MXSECURITY="/etc/mx-security/config.yml"
+
+### Parser ###
+parser () {
+	# Initial the variables.
+	local prefix=$2
+	local s
+	local w
+	local fs
+
+	# Paring the yml configuration file.
+	s='[[:space:]]*'
+	w='[a-zA-Z0-9_]*'
+	fs="$(echo @|tr @ '\034')"
+	
+	sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+	    -e "s|^\($s\)\($w\)$s[:-]$s\(.*\)$s\$|\1$fs\2$fs\3|p" "$1" |
+	awk -F"$fs" '{
+	indent = length($1)/2;
+	vname[indent] = $2;
+	for (i in vname) {if (i > indent) {delete vname[i]}}
+	    if (length($3) > 0) {
+	        vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+	        printf("%s%s%s=(\"%s\")\n", "'"$prefix"'",vn, $2, $3);
+	    }
+	}' | sed 's/_=/+=/g'
+}
+
+### Update the current reference stage directory by the input ###
+select_stage_dir () {
+	# Initial the global variables
+	config_dir=""
+	run_dir=""
+	files_dir=""
+
+	# Read stage and find out the config directories
+	for stage in "${yml_stage[@]}"
+	do
+		if [[ X"$1" == X"$stage" ]]; then
+			config_dir=$(eval echo \$yml_${stage}_config)
+			run_dir=$(eval echo \$yml_${stage}_run)
+			files_dir=$(eval echo \$yml_${stage}_files)
+		fi
+	done
+}
+
+### Show the requirement detail message to user before the tool start to setup the system ###
+show_stage_info () {
+	# Initial the variables
+	local target_stage="$1"
+	local count=1			# The message No.
+
+	local config_file=""		
+	local req_config_file=""	# requirement configuration file.
+	local target_config_dir=""
+	local target_run_dir=""
+	local target_files_dir=""
+	local master_stage=""
+	local dep_stage=""
+
+	# Select the right directory by target stage.
+	select_stage_dir $target_stage
+	target_config_dir=$config_dir
+	target_run_dir=$run_dir
+	target_files_dir=$files_dir
+
+	# Check the stage dependency	
+	for dep in "${yml_dependency[@]}"
+        do
+                master_stage=$(echo $dep | awk '{print $1}')
+                dep_stage=$(echo $dep | awk '{print $2}')
+
+                if [[ X"$master_stage" == X"$target_stage" ]]; then
+                	show_stage_info $dep_stage
+     	     	fi
+        done
+
+	echo
+	echo "**************************************************************************"
+	echo "*** To setup security $target_stage, mx-security will do the following steps: ***"
+	echo "**************************************************************************"
+
+	# Read all of the requirement configuration files in order to get requirement info
+        for req_config_file in $(ls ${target_config_dir} | grep -v "README")
+	do
+		config_file="${target_config_dir}${req_config_file}"
+	
+		# Show all of the requirement solutions to user
+		echo -n -e "[${count}]. "
+		count=$((count + 1))
+		info_handler $config_file "name" "no_wrap"	# Show the info.  no_wrap="Do not switch to the newline. Keep at the end of same line".
+		echo -n -e " : "
+		info_handler $config_file "solution"
+	done
+}
+
+### After the user confirm to setup the system, install all of the requirement configuration ###
+install_stage_req () {
+	# Initial the variables
+	local target_stage="$1"
+	local count=1
+
+	local req_config_file=""
+	local config_file=""
+	local target_config_dir=""
+	local target_run_dir=""
+	local target_files_dir=""
+	local master_stage=""
+	local dep_stage=""
+	local confirm=""
+	
+	# Select the right directory by target stage.
+	select_stage_dir $target_stage
+	target_config_dir=$config_dir
+	target_run_dir=$run_dir
+	target_files_dir=$files_dir
+
+	# Check the stage dependency	
+	for dep in "${yml_dependency[@]}"
+        do
+                master_stage=$(echo $dep | awk '{print $1}')
+                dep_stage=$(echo $dep | awk '{print $2}')
+
+                if [[ X"$master_stage" == X"$target_stage" ]]; then
+                	install_stage_req $dep_stage
+     	     	fi
+        done
+
+	echo
+	echo "****************************************"
+	echo "*** Start to install security $target_stage ***"
+	echo "****************************************"
+
+	# Read all of the requirement configuration files
+        for req_config_file in $(ls ${target_config_dir} | grep -v "README")
+	do
+		config_file="${target_config_dir}${req_config_file}"
+
+		if ! info_handler $config_file "solution" | grep "Built-in" > /dev/null; then
+			# Show the requirement name and setup all of them
+			echo -n -e "${count}. "
+			count=$((count + 1))
+			info_handler $config_file "name"
+			info_handler $config_file "solution" "no_wrap"
+			package_handler $config_file 
+			service_handler $config_file
+			command_handler $config_file $target_run_dir "install"
+			echo 
+		fi
+	done
+
+}
+
+### Switch platform security environment by input security level ###
+switch_stage () {
+	# Initial the variables
+	local target_stage="$1"
+	local wrong_param="True"	# Check the input param.
+	local stage=""
+
+	# Check whether the target stage is in config file or not.
+	for stage in ${yml_stage[@]}
+	do
+		if [[ X"$target_stage" == X"$stage" ]]; then
+			# Show all the requirement information.
+			show_stage_info $target_stage
+	
+			echo ""
+			echo "Note:"
+			echo "Please, make sure the network status is normal before you switch the security level."
+			
+			# Confirm the next action
+			echo -e -n "Do you want to continue? [y/N]"	
+			read confirm
+			if [[ X"$confirm" != X"Y" ]] && [[ X"$confirm" != X"y" ]]; then
+				exit 1
+			fi
+
+			echo "Some security requirements need to install debian packages."
+			echo "Start to update package list."
+		
+			apt-get update
+			if [[ X"$?" != X"0" ]]; then
+				echo "There is an error when apt-get updating."
+				echo "Do you want to continuue ? (y/N)"
+				read confirm
+				if [[ X"$confirm" != X"Y" ]] && [[ X"$confirm" != X"y" ]]; then
+					exit 1
+				fi
+			fi
+
+			# Write down the current date info in order to record the backup time.
+			date +"%Y%m%d%H%M%S" > /etc/mx-security/mx-security.conf.d/backup_time
+		
+			# Install all the requirements
+			install_stage_req $target_stage	
+			
+			# Edit the level info file.
+			echo "$target_stage" > $yml_current_level_config
+			
+			check_OK_count="0"
+			check_FAIL_count="0"
+
+			checker $target_stage
+
+			echo "***********************"
+			echo "*** Checking Result ***"
+			echo "***********************"
+			echo "PASS:$check_OK_count"
+			echo "FAIL:$check_FAIL_count"
+			
+			# Update usage menu.
+                        usage $target_stage > $yml_usage_config
+
+			exit 0
+		fi
+	done
+
+	# Couldn't find the matched stage
+	return 1
+}
+
+### Check all of the security related status ###
+checker () {
+	# Initial the variables
+	local config_file=""
+	local req_config_file=""
+	local target_stage="$1"
+	local target_config_dir=""
+	local target_run_dir=""
+	local target_files_dir=""
+	local master_stage=""
+	local dep_stage=""
+
+	# Select the right directory by target stage.
+	select_stage_dir $target_stage
+	target_config_dir=$config_dir
+	target_run_dir=$run_dir
+	target_files_dir=$files_dir
+
+	# Check the stage dependency	
+	for dep in "${yml_dependency[@]}"
+        do
+                master_stage=$(echo $dep | awk '{print $1}')
+                dep_stage=$(echo $dep | awk '{print $2}')
+
+                if [[ X"$master_stage" == X"$target_stage" ]]; then
+                	checker $dep_stage
+     	     	fi
+        done
+
+	SECURITY_LEVEL=$(cat $yml_current_level_config)
+	if [ X"$SECURITY_LEVEL" != X"level0" ] && [ X"$target_stage" == X"level0" ]; then
+		return 0
+	fi
+
+	echo
+	echo "**************************************************************"
+	echo "*** Checking security $target_stage related configuration status. ***"
+	echo "**************************************************************"
+
+	# Read all of the requirement configuration files
+        for req_config_file in $(ls ${target_config_dir} | grep -v "README")
+        do
+		config_file="${target_config_dir}${req_config_file}"
+
+		# Get requirement number
+		req_name=""
+		req_name="${req_config_file%%.yml}"
+		
+		# Use "check_all" to execute all of the check command functions	
+		command_handler $config_file $target_run_dir "check_all"
+		package_checker $config_file
+		service_checker $config_file
+	done
+}
+
+### Show the specific information by input config file name ###
+info_handler () {
+	# Initial the variables
+	unset name
+	unset requirement
+	unset design_guide
+	unset solution
+
+	# Read requirement configs
+        eval $(parser "$1")
+
+	# Show the parameter message by input
+	if [[ X"$3" == X"no_wrap" ]]; then
+		eval echo -n \$$2
+	else
+		eval echo \$$2
+	fi
+}
+
+### Show all of the specific command list ###
+scan_cmd_list () {
+	# Initial the variables
+	unset cmd
+	unset cmd_description
+	unset param
+	local i=""
+	local j=""
+	local filter=$2
+	
+	# read requirement configs
+        eval $(parser "$1")
+
+	# Scan all of the commands
+	for (( i=0; i<${#cmd[@]}; i++ ));
+        do
+		if echo ${cmd[i]} | grep "$filter" > /dev/null; then
+			cmd_description_parsing "${cmd_description[i]}"
+			local count=0
+			for cmd_des in "${parsed_cmd_description[@]}" 
+			do
+				if [ X"$count" == X"0" ]; then
+					printf "%-30s %s\n"  "  ${cmd[i]}" "$cmd_des"
+				else
+					printf "%-30s %s\n"  "" "$cmd_des"
+				fi
+				count=$((count + 1))
+			done
+                fi
+	done
+}
+
+### Handle all of the package action ###
+package_handler () {
+	# Initial the variables
+	unset package
+	local confirm=""
+
+	# Read requirement configs
+	eval $(parser "$1")
+
+	# Start and enable all of the necessary services that are in requirement
+	for req_package in ${package[@]}
+	do
+		if ! dpkg -l | awk '{print $2}' | grep "^$req_package" > /dev/null; then
+			echo
+			echo "Start to install $req_package package."
+#			echo -n -e "Do you want to continue? (Y/n)"
+#			read confirm
+#			if [[ X"$confirm" == X"Y" ]] || [[ X"$confirm" == X"y" ]]; then
+				apt-get install $req_package -y
+#			fi
+		fi
+	done
+}
+
+### The checker of all packages ###
+package_checker () {
+	# Initial the variables
+	unset package
+	local confirm=""
+
+	# Read requirement configs
+	eval $(parser "$1")
+
+	# Start and enable all of the necessary services that are in requirement
+	for req_package in ${package[@]}
+	do
+		echo -n -e "${req_name}: Checking $req_package package."
+		if ! dpkg -l | awk '{print $2}' | grep "^${req_package}" > /dev/null; then
+			echo -n -e "Couldn't detect the $req_package package is installed."
+			check_result 1
+		else
+			check_result 0	
+		fi
+	done
+}
+
+### Check the return value and print out the message ###
+check_result () {
+	# Check the return value	
+	case "$1" in
+		0)
+			if [[ X"$for_guard" == X"True" ]]; then
+				echo " [ OK ]%"
+			else
+				echo -e " [\033[0;32;40m OK \033[0m]"
+			fi
+			check_OK_count=$((check_OK_count + 1))
+			;;
+		*)
+			if [[ X"$for_guard" == X"True" ]]; then
+				echo " [ FAIL ]%"
+			else
+				echo -e " [\033[0;31;40m FAIL \033[0m]"
+			fi
+			check_FAIL_count=$((check_FAIL_count + 1))
+			;;
+	esac
+}
+
+cmd_description_parsing () {
+	local input_cmd_description="$1"
+
+	unset parsed_cmd_description
+	
+	local j=0
+	local array_count=0
+	while ((1))
+	do
+		if [ X"$j" != X"0" ]; then
+			local pre_cmd_description=""
+			pre_cmd_description=`echo $input_cmd_description | cut -d'\' -f${j}`
+		fi
+
+		local tmp_cmd_description=""
+		j=$((j + 1))	
+		tmp_cmd_description=`echo $input_cmd_description | cut -d'\' -f${j}`
+
+		if [ X"$tmp_cmd_description" == X"" ] || [ X"$tmp_cmd_description" == X"$pre_cmd_description" ]; then
+			break
+		else
+			parsed_cmd_description[$array_count]=$tmp_cmd_description
+			array_count=$((array_count + 1))
+		fi
+	done
+}
+
+### Handle all of the commands action ###
+command_handler () {
+	# Initial the variables
+	unset cmd
+	unset cmd_description
+	local i=""	
+	local ret_val="-1"
+	local run_dir="$2"
+	local input_cmd="$3"
+
+	# read requirement configs
+	eval $(parser "$1")
+
+	# execute the command if it is in the command list.
+	for (( i=0; i<${#cmd[@]}; i++ ));
+	do
+		ret_val="-1"
+
+		# If the parameter is "check_all", execute all of the check functions
+		if [[ X"$input_cmd" == X"check_all" ]]; then
+			if echo ${cmd[i]} | grep "check" > /dev/null; then
+				# Show the command description	
+				echo -n -e "${req_name}: ${cmd_description[i]}"
+				
+				# Execute the command
+        	                eval $(echo "bash ${run_dir}${run} ${cmd[i]}")
+				ret_val=$?
+			fi
+		# Execute the specific command with no other parameter
+		elif echo ${cmd[i]} | grep "$input_cmd" > /dev/null; then
+
+			# Show the command description	
+			cmd_description_parsing "${cmd_description[i]}"
+			local count=0
+			for cmd_des in "${parsed_cmd_description[@]}" 
+			do
+				if echo ${cmd[i]} | grep -E "install" > /dev/null; then
+					if [ X"$count" == X"0" ]; then
+						echo -n -e $cmd_des
+					else
+						echo
+						echo -n -e $cmd_des
+					fi
+				fi
+				count=$((count + 1))
+			done
+	
+			# Execute the command
+			eval $(echo "bash ${run_dir}${run} ${input_cmd} $4 $5")
+			ret_val=$?
+		
+			# There is only one install command, so break the loop after execute the install command.
+			if [[ X"$input_cmd" == X"install" ]]; then
+				break
+			fi
+		else
+			continue
+		fi
+		
+		# If ret_val=-1, no command was executed
+		if [[ X"$ret_val" != X"-1" ]]; then
+			check_result $ret_val	
+		fi
+	done
+}
+
+### Handle all of the service action ###
+service_handler () {
+	# Initial the variables
+	local req_service_enable=""
+	local req_service_disable=""
+	local ret_val=""
+	unset service_enable
+	unset service_disable
+
+	
+	# Read requirement configs
+	eval $(parser "$1")
+
+	# Start and enable all of the necessary services that are in requirement
+	for req_service_enable in ${service_enable[@]}
+	do
+		systemctl "start" "$req_service_enable"
+		ret_val=$?
+		echo -n -e "Started $req_service_enable"
+
+	        systemctl "enable" "$req_service_enable"
+		ret_val=$?
+		echo -n -e "Enabled $req_service_enable"
+	done
+	
+	# Stop and disable all of the necessary services that are in requirement
+	for req_service_disable in ${service_disable[@]}
+	do
+		systemctl "stop" "$req_service_disable"
+		ret_val=$?
+	        echo -n -e "Stopped $req_service_disable"
+	        
+		systemctl "disable" "$req_service_disable"
+		ret_val=$?
+		echo -n -e "Disabled $req_service_disable"
+	done
+}
+
+service_checker () {
+	# Initial the variables
+	local req_service_enable=""
+	local req_service_disable=""
+	local ret_val=""
+	unset service_enable
+	unset service_disable
+	
+	# Read requirement configs
+	eval $(parser "$1")
+
+	# Start and enable all of the necessary services that are in requirement
+	for req_service_enable in ${service_enable[@]}
+	do
+		echo -n -e "${req_name}: Checking $req_service_enable service.(It shall be actived)"
+		if ! systemctl status ${req_service_enable} | grep "Active: active" > /dev/null; then
+			echo -n -e "$req_service_enable is not active."
+			check_result 1
+		else	
+			check_result 0
+		fi	
+	done
+	
+	# Stop and disable all of the necessary services that are in requirement
+	for req_service_disable in ${service_disable[@]}
+	do
+		echo -n -e "${req_name}: Checking $req_service_disable service.(It shall be inactived)"
+		if ! systemctl status ${req_service_diable} | grep "Active: inactive" > /dev/null; then
+			echo -n -e "$req_service_diable is not inactive."
+			check_result 1
+		else	
+			check_result 0
+		fi	
+	done
+}
+
+### Scan all of the commands to compare with input command ###
+scan_commands () {
+	# Initial the variables
+	local config_file=""
+	local req_config_file=""
+	local target_stage="$1"
+	local input_cmd=$2
+	local parameter=$3
+	local parameter2=$4
+	local target_config_dir=""
+	local target_run_dir=""
+	local target_files_dir=""
+	local master_stage=""
+	local dep_stage=""
+	local ret_val="1"
+	local run_file=""
+
+	if grep -E "${target_stage}.*${input_cmd}" "$yml_cmd_config" > /dev/null; then
+		cmd_count=$(grep -E "${input_cmd}" "$yml_cmd_config" | wc -l)
+		if [[ X"$cmd_count" == X"1" ]]; then
+			run_file_path=$(grep "$input_cmd" "$yml_cmd_config" | awk '{print $2}')
+			run_file=$(grep "$input_cmd" "$yml_cmd_config" | awk '{print $3}')
+			bash ${run_file_path}${run_file} $input_cmd $parameter $parameter2
+			case "$?" in
+				0)
+					echo -e " [\033[0;32;40m OK \033[0m]"
+					;;
+				*)
+					echo -e " [\033[0;31;40m FAIL \033[0m]"
+					;;
+			esac
+		fi
+	else
+		cat $yml_usage_config		
+	fi
+	exit 0
+}
+
+show_options () {
+	# Display the general options
+	printf "%s\n" "mx-security compliant with IEC-62443-4-2 standard."
+	printf "%s\n" "Usage:"
+	printf "%s\n" "  mx-security [OPTIONS...] {COMMANDS...}"
+	printf "%s\n" "OPTIONS:"
+	printf "%-30s %s\n"  "  -s, --switch [STAGE]" "Setup the platform environment by security level."
+	printf "%-30s %s\n"  "" "[STAGE]:"
+	printf "%-30s %s\n"  "" "level0 - Default security settings."
+	printf "%-30s %s\n"  "" "level1 - IEC-62443 security level1 settings."
+	printf "%-30s %s\n"  "" "level2 - IEC-62443 security level2 settings."
+	printf "%-30s %s\n"  "" "level2_plus - IEC-62443 security level2 and some enhanced security settings."
+	printf "%-30s %s\n"  "  -c, --check" "Check all of the security related status."
+	printf "%-30s %s\n"  "  -v, --version" "Show the mx-security program version."
+	printf "%-30s %s\n"  "  -h, --help" "Show the mx-security usage."
+	printf "%-30s %s\n"  "  -l, --level" "Show the current security level."
+}
+
+show_commands () {
+	# Initial the variables
+	local config_file=""
+	local req_config_file=""
+	local target_stage="$1"
+	local filter="$2"
+	local target_config_dir=""
+	local target_run_dir=""
+	local target_files_dir=""
+	local master_stage=""
+	local dep_stage=""
+
+	# Select the right directory by target stage.
+	select_stage_dir $target_stage
+	target_config_dir=$config_dir
+	target_run_dir=$run_dir
+	target_files_dir=$files_dir
+
+	# Check the stage dependency	
+	for dep in "${yml_dependency[@]}"
+        do
+                master_stage=$(echo $dep | awk '{print $1}')
+                dep_stage=$(echo $dep | awk '{print $2}')
+
+                if [[ X"$master_stage" == X"$target_stage" ]]; then
+                	show_commands $dep_stage $filter
+     	     	fi
+        done
+	# Read all of the requirement configs in order to get requirement info
+	for req_config_file in $(ls ${target_config_dir} | grep -v "README")
+	do
+		config_file="${target_config_dir}${req_config_file}"
+		scan_cmd_list $config_file $filter
+	done
+}
+
+usage () {
+	show_options	
+	if [[ X"$1" != X"level0" ]]; then
+		echo "SET COMMANDS:"	
+		show_commands $1 "set-"
+		echo "GET COMMANDS:"	
+		show_commands $1 "get-"
+	fi
+}
+
+show_info () {
+	# Initial the variables
+	local config_file=""
+	local req_config_file=""
+
+	# Initial the global variables
+	config_dir=""
+	run_dir=""
+	files_dir=""
+
+	# Read stage and find out the config directories
+	for stage in "${yml_stage[@]}"
+	do
+		config_dir=$(eval echo \$yml_${stage}_config)
+		run_dir=$(eval echo \$yml_${stage}_run)
+		files_dir=$(eval echo \$yml_${stage}_files)
+	
+		echo
+		echo "*************************************************"
+		echo "*** Show security $stage related information. ***"
+		echo "*************************************************"
+	
+		# Read all of the requirement configuration files
+	        for req_config_file in $(ls ${config_dir} | grep -v "README")
+	        do
+			config_file="${config_dir}${req_config_file}"
+			info_handler $config_file "name"
+			echo -n -e "    "
+			info_handler $config_file "requirement"
+			echo -n -e "    "
+			info_handler $config_file "design_guide"
+			echo -n -e "    "
+			info_handler $config_file "solution"
+			echo ""
+		done
+	done
+}
+
+update-config () {
+	# Initial the variables
+	local config_file=""
+	local req_config_file=""
+
+	# Initial the global variables
+	config_dir=""
+	run_dir=""
+	files_dir=""
+
+	rm $yml_cmd_config
+	
+	# Read stage and find out the config directories
+	for stage in "${yml_stage[@]}"
+	do
+		config_dir=$(eval echo \$yml_${stage}_config)
+		run_dir=$(eval echo \$yml_${stage}_run)
+		files_dir=$(eval echo \$yml_${stage}_files)
+
+		# Read all of the requirement configuration files
+	        for req_config_file in $(ls ${config_dir} | grep -v "README")
+		do
+			config_file="${config_dir}${req_config_file}"
+
+			unset run
+			unset cmd
+
+			# Read mx-security config yaml file
+			eval $(parser "$config_file")	
+
+			for each_cmd in "${cmd[@]}"
+			do
+				echo "$stage $run_dir $run $each_cmd" >> $yml_cmd_config
+			done
+		done
+	done
+}
+
+### Here is main function ###
+
+# Read mx-security config yaml file
+eval $(parser "$CONFIG_MXSECURITY" "yml_")	
+	
+# Information
+SECURITY_LEVEL=$(cat $yml_current_level_config)
+VERSION=$(cat $yml_version_config)
+
+case "$1" in
+	-s | --switch)
+		switch_stage $2
+		;;
+	-c | --check)
+		check_OK_count="0"
+		check_FAIL_count="0"
+
+		checker $SECURITY_LEVEL
+
+		echo "***********************"
+		echo "*** Checking Result ***"
+		echo "***********************"
+		echo "PASS:$check_OK_count"
+		echo "FAIL:$check_FAIL_count"
+		;;
+	-h | --help)
+		cat $yml_usage_config
+		;;
+	-v | --version)
+		echo "mx-security version $VERSION"
+		;;
+	-l | --level)
+		echo $SECURITY_LEVEL
+		;;
+	update-usage-manual)
+		usage $SECURITY_LEVEL > $yml_usage_config  
+		;;
+	update-config)
+		update-config
+		;;
+	check-for-guard)
+		for_guard="True"
+		checker $SECURITY_LEVEL
+		;;
+	*)
+		if [[ X"$1" != X"" ]]; then
+			scan_commands $SECURITY_LEVEL $1 $2 $3
+		else
+			cat $yml_usage_config
+		fi
+		exit 3
+		;;
+esac
+
+exit 0

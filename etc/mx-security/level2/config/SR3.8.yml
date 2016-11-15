@@ -1,0 +1,22 @@
+name: Error handling
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall identify and handle error conditions in a manner such that effective remediation can occur. This is done in a manner that does not provide information that could be exploited by adversaries to attack the Moxa application or device unless revealing this information is necessary for the timely troubleshooting of problems.
+
+design_guide: Moxa host-based device provides the event logs, including time, daemon, error message and severity level information, etc. to facilitate the timely troubleshooting.
+
+solution: Provide the mx-guard daemon to write log messages into /var/log. 
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

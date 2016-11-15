@@ -1,0 +1,24 @@
+name: Information input restrictions 
+
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall check for integrity and authenticity of any information that is generated from external sources which are used as process control inputs or inputs that directly impact the action of the control system.
+
+design_guide: Moxa host-based devices supports validate the syntax and content of any input in device side.
+
+solution: Make sure dash and bash packages are installed.  
+
+package:
+  - bash
+  - dash
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

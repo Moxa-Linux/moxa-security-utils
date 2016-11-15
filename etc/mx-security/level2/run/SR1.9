@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR1.9:
+#		Previous Login Notification
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	backup_file "login" "level2"
+        install_file "login" "level2"
+}
+
+check-login-notify () {
+	if ! grep "/usr/bin/last -n3" "/etc/pam.d/login" > /dev/null; then
+		echo -n -e "Couldn't detect the configuration of welcome message with login log in PAM configuration."
+		exit 1
+	fi	
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-login-notify)
+		check-login-notify
+		;;
+	*)
+		exit 3
+		;;
+esac
+
+exit 0
+

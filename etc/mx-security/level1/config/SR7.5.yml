@@ -1,0 +1,22 @@
+name: Emergency Power
+
+req_category: Network-Resource-Availability
+
+requirement: All Moxa devices shall support the switch-over to an emergency power supply without affecting the existing security state, as well as when power is restored.
+
+design_guide: Moxa host devices support redundant power feature. If the devices do not support redundant power, the user manual should remind user to apply UPS (Uninterruptible Power Supply) to support redundant power source.
+
+solution: Built-in
+
+package:
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+

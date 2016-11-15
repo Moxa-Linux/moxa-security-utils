@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR1.11:
+#		Remote Session Termination
+#	Commands:
+#		1. install
+#		2. get-ssh-timeout
+#		3. set-ssh-timeout
+#		4. check-ssh-timeout
+#		5. check-ssh-package
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+        backup_file "sshd_config" "level2"
+        install_file "sshd_config" "level2"
+        systemctl "restart" "ssh.service"
+}
+
+set-ssh-timeout () {
+	local timeout=""
+
+        [[ X"$1" == X"" ]] && echo -n -e "The parameter is incorrect." && exit 1
+
+        timeout=$(grep -E "^ClientAliveInterval" "/etc/ssh/sshd_config" | awk '{print $2}')
+
+        if [[ X"$timeout" == X"" ]]; then
+                echo -n -e "Couldn't get ssh timeout."
+                exit 1
+        fi
+        sed -i "s/ClientAliveInterval $timeout/ClientAliveInterval $1/" "/etc/ssh/sshd_config"
+
+	timeout=$(grep -E "^ClientAliveInterval" "/etc/ssh/sshd_config" | awk '{print $2}')
+        if [[ X"$timeout" == X"" ]]; then
+                echo -n -e "There is something wrong when setup ssh timeout."
+                exit 1
+        fi
+}
+
+get-ssh-timeout () {
+	local timeout=""
+
+	timeout=$(grep -E "^ClientAliveInterval" "/etc/ssh/sshd_config" | awk '{print $2}')
+
+        if [[ X"$timeout" == X"" ]]; then
+                echo -n -e "Couldn't get sshtimeout."
+                exit 1
+        fi
+        echo -n -e "The ssh timeout = $timeout"
+}
+
+check-ssh-timeout () {
+	if ! grep "^ClientAliveInterval" "/etc/ssh/sshd_config"  > /dev/null && ! grep "^ClientAliveCountMax" "/etc/ssh/sshd_config" > /dev/null; then
+		echo -n -e "Couldn't detect the ssh console session timeout configuration"
+		exit 1
+	fi	
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	get-ssh-timeout)
+		get-ssh-timeout
+		;;
+	set-ssh-timeout)
+		set-ssh-timeout $2
+		;;
+	check-ssh-timeout)
+		check-ssh-timeout
+		;;
+	check-ssh-package)
+		check_package "ssh"
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

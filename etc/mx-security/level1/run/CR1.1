@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       CR1.1:
+#		Human User, Process and Device Identification and Authentication
+#
+
+. /etc/mx-security/mxsec_functions
+
+install () {
+	install_file "snmpd.conf" "level1"
+	install_file "000-default.conf" "level1"
+	install_file ".htpasswd" "level1"
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0

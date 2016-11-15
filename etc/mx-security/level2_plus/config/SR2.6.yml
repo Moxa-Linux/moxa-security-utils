@@ -1,0 +1,24 @@
+name: Audit Storage Capacity
+
+req_category: Use Control
+
+requirement: All Moxa devices shall provide warning when the allocated audit record storage reaches a configuration threshold.
+
+design_guide: Moxa host-based device shall be able to monitor the storage capacity and generate warning of insufficient storage capacity.
+
+solution: Provides a check function to notify user when storage capacity is less than 10MB.
+
+package:
+
+service:
+  enable:
+  disable:
+
+run: SR2.6
+
+cmd:
+  - check-guard-monitor
+
+cmd_description:
+  - Make sure the mx-guard daemon is running.
+

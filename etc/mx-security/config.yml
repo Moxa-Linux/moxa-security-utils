@@ -1,0 +1,45 @@
+# The caregory of requirement
+category:
+  - Identification-and-Authentication-Control
+  - Use-Control
+  - Data-Integrity
+  - Data-Confidentiality
+  - Restrict-Data-Flow
+  - Timely-Response-to-Event
+  - Network-Resource-Availability
+
+# The stage of this application
+stage:
+  - level0
+  - level1
+  - level2
+  - level2_plus
+
+# The configuration directory by category
+level0_config: /etc/mx-security/level0/config/
+level1_config: /etc/mx-security/level1/config/
+level2_config: /etc/mx-security/level2/config/
+level2_plus_config: /etc/mx-security/level2_plus/config/
+
+# The exeution file directory by category
+level0_run: /etc/mx-security/level0/run/
+level1_run: /etc/mx-security/level1/run/
+level2_run: /etc/mx-security/level2/run/
+level2_plus_run: /etc/mx-security/level2_plus/run/
+
+# The directroy of security default config or other files.
+level0_files: /etc/mx-security/level0/files/
+level1_files: /etc/mx-security/level1/files/
+level2_files: /etc/mx-security/level2/files/
+level2_plus_files: /etc/mx-security/level2_plus/files/
+
+dependency: 
+  - level1 level0
+  - level2 level1
+  - level2_plus level2
+
+# The information file path
+current_level_config: /etc/mx-security/mx-security.conf.d/level
+version_config: /etc/mx-security/mx-security.conf.d/version
+usage_config: /etc/mx-security/mx-security.conf.d/usage
+cmd_config: /etc/mx-security/mx-security.conf.d/cmd

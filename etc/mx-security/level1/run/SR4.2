@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+#       Copyright (C) MOXA Inc. All rights reserved.
+#       Copyright (C) 2016 Wes Huang <Wes.Huang@moxa.com>
+#
+#       This software is distributed under the terms of the
+#       MOXA License.  See the file COPYING-MOXA for details.
+#
+#       SR4.2:
+#		Communication confidentiality
+#	Commands:
+#		1. check-openssl-package
+#		2. check-openvpn-package
+#		3. check-ssh-package
+#		4. check-apache2-package
+#
+
+. /etc/mx-security/mxsec_functions
+
+check-apache2 () {
+	if ! systemctl status apache2.service | grep "Active: inactive" > /dev/null; then
+		echo -n -e "apache2.service is not inactive."
+		exit 1	
+	fi
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	check-apache2)
+		check-apache2
+		;;
+	*)
+		echo -n -e "The parameter is incorrect."
+		exit 1
+		;;
+esac
+
+exit 0
+

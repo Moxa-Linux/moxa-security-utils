@@ -1,0 +1,25 @@
+name: Communication integrity
+req_category: Data-Integrity
+
+requirement: All Moxa devices shall provide the capability to protect integrity of transmitted information.
+
+design_guide: Moxa host-based device provide secure transmission protocols, SSL, VPN, SSH, etc, for protecting integrity of information, eg..
+
+solution: Make sure openssl, openVPN, openssh packages are installed.
+
+package:
+  - openssl
+  - ssh
+  - openvpn
+
+service:
+  enable:
+  disable:
+
+run:
+
+cmd:
+
+cmd_description:
+
+

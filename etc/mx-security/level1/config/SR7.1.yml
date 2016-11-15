@@ -1,0 +1,23 @@
+name: Denial of Service Protection 
+req_category: Network-Resource-Availability
+
+requirement: A denial of service event on the Moxa devices shall not impact any associated safety systems.
+
+design_guide: Moxa host-based devices shall have DDoS defense ability, e.g. using IPtable or other firewall packages.
+
+solution: Make sure fail2ban and iptables package are installed.
+
+package:
+  - fail2ban
+  - iptables
+
+service:
+  enable:
+  disable:
+
+run: SR7.1
+
+cmd:
+
+cmd_description:
+
