@@ -18,9 +18,9 @@ service:
 run: SR7.3
 
 cmd:
-  - set-system-backup-normal 
-  - set-restore-system
+  - set-system-backup [PATH]
+  - set-restore-system [PATH]
 
 cmd_description:
-  - Backup the whole root file system
-  - Restore the whole root file system
+  - Backup the whole root file system to external storage.\[PATH]: An external storage directory path.
+  - Restore the whole root file system from backup file..\[PATH]: The backup file path.
