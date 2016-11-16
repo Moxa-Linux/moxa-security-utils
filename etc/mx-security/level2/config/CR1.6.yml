@@ -18,8 +18,6 @@ service:
 run: CR1.6
 
 cmd:
-  - check-openssl-package
 
 cmd_description:
-  - Checking the openssl package.
 
