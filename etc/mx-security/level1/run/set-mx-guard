@@ -26,7 +26,7 @@ install () {
 	nohup "mx-guard" "start" &> /etc/mx-security/nohup.out &
 }
 
-set-guard-interval () {
+set-guard-intv () {
 	local current_interval=""
 	local new_interval=$1
 
@@ -44,7 +44,7 @@ set-guard-interval () {
 	echo -n -e "Set interval value."
 }
 
-get-guard-interval () {
+get-guard-intv () {
 	# Clear the variables
 	interval=""
 		
@@ -66,11 +66,11 @@ case "$1" in
 	install)
 		install
 		;;
-	set-guard-interval)
-		set-guard-interval $2
+	set-guard-intv)
+		set-guard-intv $2
 		;;
-	get-guard-interval)
-		get-guard-interval
+	get-guard-intv)
+		get-guard-intv
 		;;
 	*)
 		echo -n -e "The parameter is incorrect."

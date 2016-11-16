@@ -19,9 +19,9 @@ service:
 run: SR7.3
 
 cmd:
-  - set-system-backup-encryption [USB DIR PATH]
-  - set-restore-system-encryption [FILE PATH]
+  - backup-sys-encrypt [PATH]
+  - restore-sys-encrypt [PATH]
 
 cmd_description:
-  - Backup the whole root file system to usb device with encryption.
-  - Restore the whole root file system to usb device with encryption.
+  - Backup the whole root file system to external storage with encryption.\[PATH]: An external storage directory path.
+  - Restore the whole root file system to external storage with encryption.\[PATH]: The encrypted backup file path.

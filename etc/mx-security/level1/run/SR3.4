@@ -19,7 +19,7 @@ install () {
 	install_file "integrit.conf" "level1"
 }
 
-set-integrity-database () {
+set-integrity-db () {
 	local confirm=""
 
 	# Initial integrit database
@@ -38,7 +38,7 @@ set-integrity-database () {
 
 }
 
-check-integrity-database () {
+check-integrity-db () {
 	local know_db
 
 	know_db=$(grep "^know" /etc/integrit/integrit.conf | cut -d= -f2)
@@ -61,11 +61,11 @@ case "$1" in
 	install)
 		install
 		;;
-	check-integrity-database)
-		check-integrity-database
+	check-integrity-db)
+		check-integrity-db
 		;;
-	set-integrity-database)
-		set-integrity-database
+	set-integrity-db)
+		set-integrity-db
 		;;
 	get-integrity-info)
 		get-integrity-info

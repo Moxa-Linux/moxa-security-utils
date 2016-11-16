@@ -9,12 +9,14 @@
 
 . /etc/mx-security/mxsec_functions
 
-set-system-backup-encryption () {
+backup-sys-encrypt () {
 	local backup_path=$1
 	local password1=""
 	local password2=""
 	local backup_time=$(date +"%y%m%d%H%M%S")
 
+	echo 1111
+	check_backup_path $backup_path
 
 	echo "The utility is going to backup the whole root file system with encryption."
 	echo -ne "Please, enter aes-256-cbc encryption password:"
@@ -34,7 +36,7 @@ set-system-backup-encryption () {
 	rm -rf /tmp/backup_${backup_time}.tar.gz
 }
 
-set-restore-system-encryption () {
+restore-sys-encrypt () {
 	backup_file_path=$1
 
 	check_backup_path $backup_file_path
@@ -60,11 +62,11 @@ set-restore-system-encryption () {
 }
 
 case "$1" in
-	set-system-backup-encryption)
-		set-system-backup-encryption $2
+	backup-sys-encrypt)
+		backup-sys-encrypt $2
 		;;
-	set-restore-system-encryption)
-		set-restore-system-encryption $2
+	restore-sys-encrypt)
+		restore-sys-encrypt $2
 		;;
 	*)
 		echo -n -e "The parameter is incorrect."

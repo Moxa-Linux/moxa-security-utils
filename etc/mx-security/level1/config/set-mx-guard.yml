@@ -18,8 +18,8 @@ run: set-mx-guard
 
 cmd:
   - install
-  - set-guard-interval [TIME]
-  - get-guard-interval 
+  - set-guard-intv [TIME]
+  - get-guard-intv 
 
 cmd_description:
   - Install mx-security daemon mx-guard to monitor device.

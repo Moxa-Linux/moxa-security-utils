@@ -11,8 +11,8 @@ level1 /etc/mx-security/level1/run/ CR1.4 check-def-pwd
 level1 /etc/mx-security/level1/run/ CR1.5 install
 level1 /etc/mx-security/level1/run/ CR1.5 check-strength-of-pwd
 level1 /etc/mx-security/level1/run/ set-mx-guard install
-level1 /etc/mx-security/level1/run/ set-mx-guard set-guard-interval [TIME]
-level1 /etc/mx-security/level1/run/ set-mx-guard get-guard-interval 
+level1 /etc/mx-security/level1/run/ set-mx-guard set-guard-intv [TIME]
+level1 /etc/mx-security/level1/run/ set-mx-guard get-guard-intv 
 level1 /etc/mx-security/level1/run/ SR1.10 install
 level1 /etc/mx-security/level1/run/ SR1.10 check-console-timeout
 level1 /etc/mx-security/level1/run/ SR1.7 install
@@ -33,15 +33,13 @@ level1 /etc/mx-security/level1/run/ SR2.6 check-reserved-storage
 level1 /etc/mx-security/level1/run/ SR2.7 install
 level1 /etc/mx-security/level1/run/ SR2.7 check-max_log_file
 level1 /etc/mx-security/level1/run/ SR2.7 check-num_logs
-level1 /etc/mx-security/level1/run/ SR2.7 check-auditd
 level1 /etc/mx-security/level1/run/ SR3.4 install
-level1 /etc/mx-security/level1/run/ SR3.4 set-integrity-database
-level1 /etc/mx-security/level1/run/ SR3.4 check-integrity-database
+level1 /etc/mx-security/level1/run/ SR3.4 set-integrity-db
+level1 /etc/mx-security/level1/run/ SR3.4 check-integrity-db
 level1 /etc/mx-security/level1/run/ SR3.4 get-integrity-info
 level1 /etc/mx-security/level1/run/ SR4.2 check-apache2
-level1 /etc/mx-security/level1/run/ SR7.3 set-system-backup-normal 
-level1 /etc/mx-security/level1/run/ SR7.3 set-restore-system
-level2 /etc/mx-security/level2/run/ CR1.6 check-openssl-package
+level1 /etc/mx-security/level1/run/ SR7.3 backup-sys [PATH]
+level1 /etc/mx-security/level1/run/ SR7.3 restore-sys [PATH]
 level2 /etc/mx-security/level2/run/ SR1.11 install
 level2 /etc/mx-security/level2/run/ SR1.11 get-ssh-timeout
 level2 /etc/mx-security/level2/run/ SR1.11 set-ssh-timeout [TIME]
@@ -49,15 +47,12 @@ level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-timeout
 level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-package
 level2 /etc/mx-security/level2/run/ SR1.9 install
 level2 /etc/mx-security/level2/run/ SR1.9 check-login-notify
-level2 /etc/mx-security/level2/run/ SR4.3  check-openssl-package
-level2 /etc/mx-security/level2/run/ SR4.4 check-openssl-package
-level2 /etc/mx-security/level2/run/ SR4.5 openssl
 level2_plus /etc/mx-security/level2_plus/run/ CR1.5 install
 level2_plus /etc/mx-security/level2_plus/run/ CR1.5 check-lifetime-of-pwd
 level2_plus /etc/mx-security/level2_plus/run/ CR1.5 check-reuse-of-pwd
-level2_plus /etc/mx-security/level2_plus/run/ CR1.5 install
-level2_plus /etc/mx-security/level2_plus/run/ CR1.5 check-concurrent-session
+level2_plus /etc/mx-security/level2_plus/run/ SR2.4 install
+level2_plus /etc/mx-security/level2_plus/run/ SR2.4 check-concurrent-session
 level2_plus /etc/mx-security/level2_plus/run/ SR2.6 check-guard-monitor
 level2_plus /etc/mx-security/level2_plus/run/ SR2.8 check-time-source
-level2_plus /etc/mx-security/level2_plus/run/ SR7.3 set-system-backup-encryption [USB DIR PATH]
-level2_plus /etc/mx-security/level2_plus/run/ SR7.3 set-restore-system-encryption [FILE PATH]
+level2_plus /etc/mx-security/level2_plus/run/ SR7.3 backup-sys-encrypt [PATH]
+level2_plus /etc/mx-security/level2_plus/run/ SR7.3 restore-sys-encrypt [PATH]

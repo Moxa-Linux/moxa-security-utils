@@ -9,7 +9,7 @@
 
 . /etc/mx-security/mxsec_functions
 
-set-system-backup () {
+backup-sys () {
 	local backup_path=$1
 	local backup_time=$(date +"%y%m%d%H%M%S")
 
@@ -23,7 +23,7 @@ set-system-backup () {
 	md5sum "${backup_path}/backup_${backup_time}.tar.gz" >> /etc/mx-security/mx-security.conf.d/backup_checksum
 }
 
-set-restore-system () {
+restore-sys () {
 	backup_file_path=$1
 
 	check_backup_path $backup_file_path
@@ -34,11 +34,11 @@ set-restore-system () {
 }
 
 case "$1" in
-	set-system-backup-normal)
-		set-system-backup-normal $2
+	backup-sys)
+		backup-sys $2
 		;;
-	set-restore-system)
-		set-restore-system $2
+	restore-sys)
+		restore-sys $2
 		;;
 	*)
 		echo -n -e "The parameter is incorrect."

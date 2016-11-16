@@ -19,8 +19,8 @@ run: SR3.4
 
 cmd:
   - install
-  - set-integrity-database
-  - check-integrity-database
+  - set-integrity-db
+  - check-integrity-db
   - get-integrity-info
 
 cmd_description:
