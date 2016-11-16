@@ -19,9 +19,9 @@ run: SR3.4
 
 cmd:
   - install
-  - set-integrity-db
-  - check-integrity-db
-  - get-integrity-info
+  - set-integrity-db 
+  - check-integrity-db 
+  - get-integrity-info 
 
 cmd_description:
   - Setup the default integrit config and then initial the file integrity database.
