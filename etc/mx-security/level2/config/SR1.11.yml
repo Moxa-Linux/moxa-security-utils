@@ -19,11 +19,11 @@ service:
 run: SR1.11
 
 cmd:
-  - install
-  - get-ssh-timeout
+  - install 
+  - get-ssh-timeout 
   - set-ssh-timeout [TIME]
-  - check-ssh-timeout
-  - check-ssh-package
+  - check-ssh-timeout 
+  - check-ssh-package 
 
 cmd_description:
   - Setup the configuration of ssh session timeout.
