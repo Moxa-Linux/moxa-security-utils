@@ -98,12 +98,24 @@ set_config_val () {
 ### Backup Functions [check backup file path] ###
 check_backup_path () {
 	local backup_path=$1
-	USB_DIR=$(df -h | grep /dev/sd | awk '{print $6}')
 
-	if ! echo $backup_path | grep $USB_DIR; then
-		echo -n -e "The path is not in USB directory"
-		exit 1
+	USB_DIR=$(df -h | grep "/dev/sd" | awk '{print $6}')
+	SD_DIR=$(df -h | grep "/dev/mmcblk" | awk '{print $6}')
+
+	if [ X"" != X"$USB_DIR" ]; then
+		if echo $backup_path | grep $USB_DIR > /dev/null; then
+	                return 0
+		fi
 	fi
+	
+	if [ X"" != X"$SD_DIR" ]; then
+                if echo $backup_path | grep $SD_DIR > /dev/null; then
+                        return 0
+                fi
+        fi
+
+       	echo -n -e "The path is not an external storage directory."
+       	exit 1
 }
 
 ### Backup Functions [check file checksum] ###
