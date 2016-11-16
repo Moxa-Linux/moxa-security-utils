@@ -323,7 +323,7 @@ scan_cmd_list () {
 	# Scan all of the commands
 	for (( i=0; i<${#cmd[@]}; i++ ));
         do
-		if echo ${cmd[i]} | grep "$filter" > /dev/null; then
+		if echo ${cmd[i]} | grep "$filter" | grep -v "check-" | grep -v "install" > /dev/null; then
 			cmd_description_parsing "${cmd_description[i]}"
 			local count=0
 			for cmd_des in "${parsed_cmd_description[@]}" 
@@ -592,7 +592,12 @@ scan_commands () {
 	local ret_val="1"
 	local run_file=""
 
-	if grep -E "${target_stage}.*${input_cmd}" "$yml_cmd_config" > /dev/null; then
+	if grep -E "${input_cmd}" "$yml_cmd_config" > /dev/null; then
+		if ! grep "${input_cmd}" "$yml_usage_config" > /dev/null; then
+			cat $yml_usage_config
+			exit 0
+		fi
+
 		cmd_count=$(grep -E "${input_cmd}" "$yml_cmd_config" | wc -l)
 		if [[ X"$cmd_count" == X"1" ]]; then
 			run_file_path=$(grep "$input_cmd" "$yml_cmd_config" | awk '{print $2}')
@@ -670,10 +675,11 @@ show_commands () {
 usage () {
 	show_options	
 	if [[ X"$1" != X"level0" ]]; then
-		echo "SET COMMANDS:"	
-		show_commands $1 "set-"
-		echo "GET COMMANDS:"	
-		show_commands $1 "get-"
+		echo "COMMANDS:"	
+#		show_commands $1 "set-"
+#		echo "GET COMMANDS:"	
+#		show_commands $1 "get-"
+		show_commands $1
 	fi
 }
 
