@@ -9,12 +9,19 @@
 
 . /etc/mx-security/mxsec_functions
 
-backup-sys () {
+backup-system () {
 	local backup_path=$1
 	local backup_time=$(date +"%y%m%d%H%M%S")
+	local confirm=""
 
 	# Check whether the backup path is in USB dir or not
 	check_backup_path $backup_path
+
+	echo -n -e "Do you wnat to backup the whole root file system into $backup_path directory? (y/N)"
+	read confirm
+	if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+		exit 0
+	fi
 	
 	echo "The utility is going to backup the whole root file system."
 
@@ -23,22 +30,31 @@ backup-sys () {
 	md5sum "${backup_path}/backup_${backup_time}.tar.gz" >> /etc/mx-security/mx-security.conf.d/backup_checksum
 }
 
-restore-sys () {
-	backup_file_path=$1
+restore-system () {
+	local backup_file_path=$1
+	local confirm=""
 
 	check_backup_path $backup_file_path
 	check_file_checksum $backup_file_path
+	
+	echo "Note: Don't stop the process while it is restoring the system."
+        echo -n -e "Do you wnat to restore the whole root file system by $backup_file_path file? (y/N)"
+        read confirm
+        if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+                exit 0
+        fi
+
 	create_restore_process "$backup_file_path"
 	install_file "mxsec_setdef" "level1"
 	bash /sbin/mxsec_setdef
 }
 
 case "$1" in
-	backup-sys)
-		backup-sys $2
+	backup-system)
+		backup-system $2
 		;;
-	restore-sys)
-		restore-sys $2
+	restore-system)
+		restore-system $2
 		;;
 	*)
 		echo -n -e "The parameter is incorrect."
