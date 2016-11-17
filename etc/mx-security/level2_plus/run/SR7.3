@@ -47,9 +47,11 @@ restore-sys-encrypt () {
 	local backup_file_path=$1
 
 	check_backup_path $backup_file_path
+
+	echo "Checking backup file's checksum. Please wait..."
 	check_file_checksum $backup_file_path
 	
-	echo "Note: Don't stop the process while it is restoring the system."
+	echo "Note: Don't stop the process while it is restoring the system. The system will reboot after the restore process is finished."
         echo -n -e "Do you wnat to restore the whole root file system by $backup_file_path file? (y/N)"
         read confirm
         if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
