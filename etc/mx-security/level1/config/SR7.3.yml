@@ -18,8 +18,8 @@ service:
 run: SR7.3
 
 cmd:
-  - backup-sys [PATH]
-  - restore-sys [PATH]
+  - backup-system [PATH]
+  - restore-system [PATH]
 
 cmd_description:
   - Backup the whole root file system to an external storage.\[PATH]: An external storage directory path.

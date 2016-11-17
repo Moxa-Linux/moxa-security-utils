@@ -598,10 +598,10 @@ scan_commands () {
 			exit 0
 		fi
 
-		cmd_count=$(grep -E "${input_cmd} " "$yml_cmd_config" | wc -l)
+		cmd_count=$(grep -E "${input_cmd}" "$yml_cmd_config" | wc -l)
 		if [[ X"$cmd_count" == X"1" ]]; then
-			run_file_path=$(grep "$input_cmd " "$yml_cmd_config" | awk '{print $2}')
-			run_file=$(grep "$input_cmd " "$yml_cmd_config" | awk '{print $3}')
+			run_file_path=$(grep "$input_cmd" "$yml_cmd_config" | awk '{print $2}')
+			run_file=$(grep "$input_cmd" "$yml_cmd_config" | awk '{print $3}')
 			bash ${run_file_path}${run_file} $input_cmd $parameter $parameter2
 			case "$?" in
 				0)
