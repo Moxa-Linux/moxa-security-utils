@@ -14,9 +14,15 @@ backup-sys-encrypt () {
 	local password1=""
 	local password2=""
 	local backup_time=$(date +"%y%m%d%H%M%S")
+	local confirm=""
 
-	echo 1111
 	check_backup_path $backup_path
+
+        echo -n -e "Do you wnat to backup the whole root file system into $backup_path directory? (y/N)"
+        read confirm
+        if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+                exit 0
+        fi
 
 	echo "The utility is going to backup the whole root file system with encryption."
 	echo -ne "Please, enter aes-256-cbc encryption password:"
@@ -37,10 +43,19 @@ backup-sys-encrypt () {
 }
 
 restore-sys-encrypt () {
-	backup_file_path=$1
+	local confirm=""
+	local backup_file_path=$1
 
 	check_backup_path $backup_file_path
 	check_file_checksum $backup_file_path
+	
+	echo "Note: Don't stop the process while it is restoring the system."
+        echo -n -e "Do you wnat to restore the whole root file system by $backup_file_path file? (y/N)"
+        read confirm
+        if [ X"$confirm" != X"Y" ] && [ X"$confirm" != X"y" ]; then
+                exit 0
+        fi
+
 	echo "The utility is going to decryption the backup file."
 	echo -ne "Please, enter aes-256-cbc encryption password:"
 	read password1
