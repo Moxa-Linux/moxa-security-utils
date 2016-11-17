@@ -34,17 +34,17 @@ level1 /etc/mx-security/level1/run/ SR2.7 install
 level1 /etc/mx-security/level1/run/ SR2.7 check-max_log_file
 level1 /etc/mx-security/level1/run/ SR2.7 check-num_logs
 level1 /etc/mx-security/level1/run/ SR3.4 install
-level1 /etc/mx-security/level1/run/ SR3.4 set-integrity-db
-level1 /etc/mx-security/level1/run/ SR3.4 check-integrity-db
-level1 /etc/mx-security/level1/run/ SR3.4 get-integrity-info
+level1 /etc/mx-security/level1/run/ SR3.4 set-integrity-db 
+level1 /etc/mx-security/level1/run/ SR3.4 check-integrity-db 
+level1 /etc/mx-security/level1/run/ SR3.4 get-integrity-info 
 level1 /etc/mx-security/level1/run/ SR4.2 check-apache2
-level1 /etc/mx-security/level1/run/ SR7.3 backup-sys [PATH]
-level1 /etc/mx-security/level1/run/ SR7.3 restore-sys [PATH]
-level2 /etc/mx-security/level2/run/ SR1.11 install
-level2 /etc/mx-security/level2/run/ SR1.11 get-ssh-timeout
+level1 /etc/mx-security/level1/run/ SR7.3 backup-system [PATH]
+level1 /etc/mx-security/level1/run/ SR7.3 restore-system [PATH]
+level2 /etc/mx-security/level2/run/ SR1.11 install 
+level2 /etc/mx-security/level2/run/ SR1.11 get-ssh-timeout 
 level2 /etc/mx-security/level2/run/ SR1.11 set-ssh-timeout [TIME]
-level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-timeout
-level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-package
+level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-timeout 
+level2 /etc/mx-security/level2/run/ SR1.11 check-ssh-package 
 level2 /etc/mx-security/level2/run/ SR1.9 install
 level2 /etc/mx-security/level2/run/ SR1.9 check-login-notify
 level2_plus /etc/mx-security/level2_plus/run/ CR1.5 install
