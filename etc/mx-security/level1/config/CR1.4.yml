@@ -11,6 +11,7 @@ package:
   - libpam-modules
   - passwd
   - base-passwd
+  - libpam-cracklib
 
 service:
   enable:
