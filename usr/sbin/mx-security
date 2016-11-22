@@ -509,7 +509,6 @@ service_handler () {
 	local ret_val=""
 	unset service_enable
 	unset service_disable
-	local check_service=""
 	
 	# Read requirement configs
 	eval $(parser "$1")
@@ -517,11 +516,9 @@ service_handler () {
 	# Start and enable all of the necessary services that are in requirement
 	for req_service_enable in ${service_enable[@]}
 	do
-		check_service=$(whereis $req_service_enable | awk '{print $2}')
-		if [ X"$check_service" == X"" ]; then
-			echo "There is no $req_service_enable"
-			break
-		fi
+		if systemctl status $req_service_enable | grep not-found > /dev/null; then
+                        continue
+                fi
 
 		systemctl "start" "$req_service_enable"
 		ret_val=$?
@@ -535,11 +532,9 @@ service_handler () {
 	# Stop and disable all of the necessary services that are in requirement
 	for req_service_disable in ${service_disable[@]}
 	do
-		check_service=$(whereis $req_service_disable | awk '{print $2}')
-		if [ X"$check_service" == X"" ]; then
-			echo "There is no $req_service_disable"
-			break
-		fi
+		if systemctl status $req_service_disable | grep not-found > /dev/null; then
+                        continue
+                fi
 		
 		systemctl "stop" "$req_service_disable"
 		ret_val=$?
@@ -558,7 +553,6 @@ service_checker () {
 	local ret_val=""
 	unset service_enable
 	unset service_disable
-	local check_service=""
 	
 	# Read requirement configs
 	eval $(parser "$1")
@@ -566,10 +560,9 @@ service_checker () {
 	# Start and enable all of the necessary services that are in requirement
 	for req_service_enable in ${service_enable[@]}
 	do
-		check_service=$(whereis $req_service_enable | awk '{print $2}')
-		if [ X"$check_service" == X"" ]; then
-			break
-		fi
+		if systemctl status $req_service_enable | grep not-found > /dev/null; then
+                        continue
+                fi
 
 		echo -n -e "${req_name}: Checking $req_service_enable service.(It shall be actived)"
 		if ! systemctl status ${req_service_enable} | grep "Active: active" > /dev/null; then
@@ -583,10 +576,9 @@ service_checker () {
 	# Stop and disable all of the necessary services that are in requirement
 	for req_service_disable in ${service_disable[@]}
 	do
-		check_service=$(whereis $req_service_disable | awk '{print $2}')
-		if [ X"$check_service" == X"" ]; then
-			break
-		fi
+		if systemctl status $req_service_disable | grep not-found > /dev/null; then
+                        continue
+                fi
 		
 		echo -n -e "${req_name}: Checking $req_service_disable service.(It shall be inactived)"
 		if ! systemctl status ${req_service_diable} | grep "Active: inactive" > /dev/null; then
