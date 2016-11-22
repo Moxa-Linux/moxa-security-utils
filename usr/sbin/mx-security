@@ -558,6 +558,7 @@ service_checker () {
 	local ret_val=""
 	unset service_enable
 	unset service_disable
+	local check_service=""
 	
 	# Read requirement configs
 	eval $(parser "$1")
@@ -565,6 +566,11 @@ service_checker () {
 	# Start and enable all of the necessary services that are in requirement
 	for req_service_enable in ${service_enable[@]}
 	do
+		check_service=$(whereis $req_service_enable | awk '{print $2}')
+		if [ X"$check_service" == X"" ]; then
+			break
+		fi
+
 		echo -n -e "${req_name}: Checking $req_service_enable service.(It shall be actived)"
 		if ! systemctl status ${req_service_enable} | grep "Active: active" > /dev/null; then
 			echo -n -e "$req_service_enable is not active."
@@ -577,6 +583,11 @@ service_checker () {
 	# Stop and disable all of the necessary services that are in requirement
 	for req_service_disable in ${service_disable[@]}
 	do
+		check_service=$(whereis $req_service_disable | awk '{print $2}')
+		if [ X"$check_service" == X"" ]; then
+			break
+		fi
+		
 		echo -n -e "${req_name}: Checking $req_service_disable service.(It shall be inactived)"
 		if ! systemctl status ${req_service_diable} | grep "Active: inactive" > /dev/null; then
 			echo -n -e "$req_service_diable is not inactive."
