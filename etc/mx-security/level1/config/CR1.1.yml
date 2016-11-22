@@ -9,8 +9,6 @@ design_guide: Moxa device shall provide login authentication at all access porta
 solution: Make sure login, base-passwd, passwd, libpam-modules packages are installed. Turn off SNMP v1, v2c view and enable SNMP v3 feature. Enable apache authentication mechanism. Disable snmpd and apache2 services by default.
 
 package:
-  - apache2
-  - snmpd
   - login
   - base-passwd
   - libpam-modules

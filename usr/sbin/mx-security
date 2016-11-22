@@ -509,7 +509,7 @@ service_handler () {
 	local ret_val=""
 	unset service_enable
 	unset service_disable
-
+	local check_service=""
 	
 	# Read requirement configs
 	eval $(parser "$1")
@@ -517,6 +517,12 @@ service_handler () {
 	# Start and enable all of the necessary services that are in requirement
 	for req_service_enable in ${service_enable[@]}
 	do
+		check_service=$(whereis $req_service_enable | awk '{print $2}')
+		if [ X"$check_service" == X"" ]; then
+			echo "There is no $req_service_enable"
+			break
+		fi
+
 		systemctl "start" "$req_service_enable"
 		ret_val=$?
 		echo -n -e "Started $req_service_enable"
@@ -529,6 +535,12 @@ service_handler () {
 	# Stop and disable all of the necessary services that are in requirement
 	for req_service_disable in ${service_disable[@]}
 	do
+		check_service=$(whereis $req_service_disable | awk '{print $2}')
+		if [ X"$check_service" == X"" ]; then
+			echo "There is no $req_service_disable"
+			break
+		fi
+		
 		systemctl "stop" "$req_service_disable"
 		ret_val=$?
 	        echo -n -e "Stopped $req_service_disable"
