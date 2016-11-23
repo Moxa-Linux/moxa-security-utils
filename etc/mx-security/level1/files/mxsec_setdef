@@ -3,6 +3,10 @@
 #ignore signal
 trap '' 1 2 3 6
 
+BACKUP_FILE_PATH="$1"
+BACKUP_FILE_DIR="$2"
+BACKUP_DEV=$(df -h | grep $BACKUP_FILE_DIR | awk '{print $1}')
+
 TMP_FS=/dev/shm/debian
 REAL_FS=rfs
 
@@ -27,10 +31,8 @@ mount -t sysfs sys ${TMP_FS}/sys/
 mount -o bind /dev ${TMP_FS}/dev/
 mount ${ROOT_PART} ${TMP_FS}/${REAL_FS}
 
-USB_DIR=$(df -h | grep /dev/sd | awk '{print $6}')
-USB_DEV=$(df -h | grep /dev/sd | awk '{print $1}')
-mkdir -p ${TMP_FS}/${USB_DIR}
-mount $USB_DEV ${TMP_FS}/${USB_DIR}
+mkdir -p ${TMP_FS}/${BACKUP_FILE_DIR}
+mount $BACKUP_DEV ${TMP_FS}/${BACKUP_FILE_DIR}
 
 chroot ${TMP_FS} /setdef-chroot_mxsec  /bin/ash
 sync

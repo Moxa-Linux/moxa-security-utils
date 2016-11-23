@@ -33,8 +33,24 @@ backup-system () {
 restore-system () {
 	local backup_file_path=$1
 	local confirm=""
+	local backup_file_dir=""
 
-	check_backup_path $backup_file_path
+	# Check backup file's path	
+	for storage_dir in $(df -h | awk '{print $6}')
+	do
+	        if echo $storage_dir | grep media > /dev/null; then
+                	if echo $backup_file_path | grep "$storage_dir" > /dev/null; then
+				backup_file_dir="$storage_dir"
+			fi
+        	fi
+	done
+
+	if [ X"$backup_file_dir" == X"" ]; then
+		echo "Can not detect the backup file path is mounted."
+		exit 0
+	fi
+
+#	check_backup_path $backup_file_path
 	
 	echo "Checking backup file's checksum. Please wait..."
 	check_file_checksum $backup_file_path
@@ -48,7 +64,7 @@ restore-system () {
 
 	create_restore_process "$backup_file_path"
 	install_file "mxsec_setdef" "level1"
-	bash /sbin/mxsec_setdef
+	bash /sbin/mxsec_setdef $backup_file_path $backup_file_dir
 }
 
 case "$1" in
