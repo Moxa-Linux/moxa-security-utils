@@ -54,9 +54,9 @@ install () {
 	systemctl "restart" "auditd.service"
 
 	check_package "login"
-	[[ X"$?" == X"0" ]] && backup_file "login" "level0"
+	[[ X"$?" == X"0" ]] && backup_file "login " "level0"
 	[[ X"$?" != X"0" ]] && exit 1	
-	install_file "login" "level0"
+	install_file "login " "level0"
 	[[ X"$?" != X"0" ]] && exit 1	
 
 	check_package "integrit"
@@ -98,13 +98,23 @@ install () {
 
 ### Check all the configurations ###
 check-common-auth () {
-	diff /etc/mx-security/level0/files/common-auth /etc/pam.d/common-auth &> /dev/null
-	[[ X"$?" != X"0" ]] && exit 1
+	check_package "libpam"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+        	diff /etc/mx-security/level0/files/common-auth /etc/pam.d/common-auth &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
 }
 
 check-common-password () {
-	diff /etc/mx-security/level0/files/common-password /etc/pam.d/common-password &> /dev/null
-	[[ X"$?" != X"0" ]] && exit 1
+	check_package "libpam"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/common-password /etc/pam.d/common-password &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
 }
 
 check-profile () {
@@ -113,18 +123,106 @@ check-profile () {
 }
 
 check-sshd_config () {
-	diff /etc/mx-security/level0/files/sshd_config /etc/ssh/sshd_config &> /dev/null
-	[[ X"$?" != X"0" ]] && exit 1
+	check_package "ssh"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/sshd_config /etc/ssh/sshd_config &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
 }
 
 check-audit () {
-	diff /etc/mx-security/level0/files/auditd.conf /etc/audit/auditd.conf &> /dev/null
-	[[ X"$?" != X"0" ]] && exit 1
+	check_package "auditd"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/auditd.conf /etc/audit/auditd.conf &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-htpasswd () {
+	check_package "apache2"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/.htpasswd /etc/apache2/.htpasswd &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-login_defs () {
+	check_package "login"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/login.defs /etc/login.defs &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-limits_conf () {
+	check_package "login"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/limits.conf /etc/security/limits.conf &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-login () {
+	check_package "login"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/login /etc/pam.d/login &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-integrit () {
+        check_package "integrit"
+	if [ X"$?" != X"0" ]; then
+        	echo -n -e "The related package is not installed. Don't need to restore configuration file."
+        else
+		diff /etc/mx-security/level0/files/integrit.conf /etc/integrit/integrit.conf &> /dev/null
+	        [[ X"$?" != X"0" ]] && exit 1
+	fi
+}
+
+check-000-default.conf () {
+	check_package "apache2"
+	if [ X"$?" != X"0" ]; then
+		echo -n -e "The related package is not installed. Don't need to restore configuration file."
+	else
+		diff /etc/mx-security/level0/files/000-default.conf /etc/apache2/sites-available/000-default.conf &> /dev/null
+		[[ X"$?" != X"0" ]] && exit 1
+	fi
 }
 
 case "$1" in
 	install)
 		install
+		;;
+	check-htpasswd)
+		check-htpasswd
+		;;
+	check-login_defs)
+		check-login_defs
+		;;
+	check-limits_conf)
+		check-limits_conf
+		;;
+	check-login)
+		check-login
+		;;
+	check-integrit)
+		check-integrit
+		;;
+	check-000-default.conf)
+		check-000-default.conf
 		;;
 	check-common-auth)
 		check-common-auth
