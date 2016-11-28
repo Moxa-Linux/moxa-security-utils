@@ -44,7 +44,7 @@ check-integrity-db () {
 	know_db=$(grep "^know" /etc/integrit/integrit.conf | cut -d= -f2)
 	
 	if [[ ! -f "$know_db" ]]; then
-		echo -n -e "There is no integrit database. You can use "mx-security set-integrity-database" command to create it."
+		echo -n -e "There is no integrit database. You can use "mx-security set-integrity-db" command to create it."
 		exit 1
 	fi 
 }
