@@ -21,9 +21,10 @@ install_file () {
 	local current_level=$2
 
 	# Get information
-	stage=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $1}')
-	file_path=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
+	stage=$(grep -E "${current_level}.*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $1}')
+	file_path=$(grep -E "${current_level}.*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
 
+	file_name=$(echo $file_name| awk '{print $1}')
 	# Install the configuration file into system.
 	cp -arf "/etc/mx-security/$stage/files/$file_name" "$file_path"
 	return $?
@@ -38,7 +39,7 @@ backup_file () {
 
 	# Get information
 	backup_time=$(cat /etc/mx-security/mx-security.conf.d/backup_time)
-	file_path=$(grep -E "${current_level} .*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
+	file_path=$(grep -E "${current_level}.*${file_name}" /etc/mx-security/mx-security.conf.d/files.mapping | awk '{print $3}')
 
 	# Install the configuration file into system.
 	mkdir -p /etc/mx-security/bak_sys_config/${backup_time}
