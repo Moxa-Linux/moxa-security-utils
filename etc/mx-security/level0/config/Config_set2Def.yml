@@ -4,7 +4,7 @@ requirement: N/A
 
 design_guide: N/A
 
-solution: Restore common-auth common-password sshd_config profile to default configuration.	
+solution: Restore common-auth, common-password, sshd_config, login.defs, limits.conf, integrit.conf, login, 000-default.conf, .htpasswd, profile, audit to default configuration.	
 
 package:
 
@@ -16,6 +16,12 @@ run: Config_Set2Def
 
 cmd:
   - install
+  - check-login_defs
+  - check-limits_conf
+  - check-integrit
+  - check-login
+  - check-000-default.conf
+  - check-htpasswd
   - check-common-auth
   - check-common-password
   - check-profile
@@ -23,9 +29,15 @@ cmd:
   - check-audit
 
 cmd_description:
-  - Install the prepared common-auth common-password sshd_config files.	
+  - Install the prepared common-auth, common-password, sshd_config, login.defs, limits.conf, integrit.conf, login, 000-default.conf, .htpasswd, profile, audit files.	
+  - Check whether the login.defs configuraiotn is default setting or not.
+  - Check whether the limits.conf configuraiotn is default setting or not.
+  - Check whether the integrit.conf configuraiotn is default setting or not.
+  - Check whether the login configuraiotn is default setting or not.
+  - Check whether the 000-default.conf configuraiotn is default setting or not.
+  - Check whether the .htpasswd configuraiotn is default setting or not.
   - Check whether the common-auth configuraiotn is default setting or not.
-  - Check whether the common-password configuraiotn is default setting or not.
+  - Check whether the common-password configuration is default setting or not.
   - Check whether the profile configuraiotn is default setting or not.
   - Check whether the sshd_config configuraiotn is default setting or not.
   - Check whether the audit configuraiotn is default setting or not.
