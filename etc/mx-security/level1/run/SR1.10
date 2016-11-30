@@ -41,8 +41,8 @@ get-console-timeout () {
 }
 
 check-console-timeout () {
-	if ! grep "readonly TMOUT=" "/etc/profile" > /dev/null; then
-		echo -n -e "The session timeout is inconsistent with mx-security configuration."
+	if ! $(export | grep "TMOUT=") > /dev/null; then
+		echo -n -e "The session timeout is not set. (Please re-login your account after you switched to the new security level.)."
 		exit 1
 	fi
 }
