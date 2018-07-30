@@ -5,10 +5,10 @@ requirement: 1. Moxa shall provide guidelines for recommended network and securi
 
 design_guide: 1. Moxa host-based devices support default configuration for recommended network. For security configuration, user manual shall specify guidelines, or supports security wizard. 2. Moxa host-based devices provide access portal (ex, console, ...) to allow access to the currently deployed network and security configuration settings.
 
-solution: Make sure mx-security and sshd packages are installed. 
+solution: Make sure moxa-security-utils(mx-security) and sshd packages are installed. 
 
 package:
-  - mx-security
+  - moxa-security-utils
   - ssh
 
 service:
