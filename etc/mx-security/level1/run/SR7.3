@@ -67,11 +67,20 @@ restore-system () {
 	bash /sbin/mxsec_setdef $backup_file_path $backup_file_dir
 }
 
+check_system_version() {
+	if cat /etc/debian_version | grep -q "9."; then
+		echo -n -e "This system's version doesn't support this feature."
+		exit 99
+	fi
+}
+
 case "$1" in
 	backup-system)
+		check_system_version
 		backup-system $2
 		;;
 	restore-system)
+		check_system_version
 		restore-system $2
 		;;
 	*)
