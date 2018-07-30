@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cp -arf etc/mx-security/* /etc/mx-security/
-cp -arf usr/sbin/mx-security /usr/sbin/mx-security
- 
