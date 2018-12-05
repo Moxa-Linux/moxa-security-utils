@@ -1,3 +1,9 @@
+moxa-security-utils (1.2.1) stretch; urgency=medium
+
+  * fix: allow certain ip to make ssh connection via wireless
+
+ -- FeroJD Zhou <FeroJD.Zhou@moxa.com>  Wed, 05 Dec 2018 10:29:51 +0800
+
 moxa-security-utils (1.2.0) stretch; urgency=medium
 
   * rename package name from mx-security to moxa-security-utils
