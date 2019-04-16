@@ -1,0 +1,12 @@
+Source: moxa-security-utils
+Section: utils
+Priority: Required
+Maintainer: Wes Huang <Wes.Huang@moxa.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: http://www.moxa.com/
+
+Package: moxa-security-utils
+Architecture: all
+Depends:
+Description: MXcore CyberSecurity Tool on MOXA Computing Device.

@@ -1,0 +1,24 @@
+moxa-security-utils (1.2.0) stretch; urgency=medium
+
+  * rename package name from mx-security to moxa-security-utils
+  * update debian/* format
+
+ -- Wes Huang <Wes.Huang@moxa.com>  Mon, 30 Jul 2018 14:36:37 +0800
+
+moxa-security-utils (1.1.0) stretch; urgency=medium
+
+  * Support Debian9
+
+ -- Wes Huang <Wes.Huang@moxa.com>  Tue, 15 May 2018 21:46:20 +0800
+
+moxa-security-utils (1.0.0+deb8) unstable; urgency=medium
+
+  * First Release.
+
+ -- Wes Huang <Wes.Huang@moxa.com>  Fri, 30 Sep 2016 11:18:36 +0800
+
+moxa-security-utils (0.9.0+deb8+beta) unstable; urgency=low
+
+  * Beta Version Release.
+
+ -- Wes Huang <Wes.Huang@moxa.com>  Thu, 15 Sep 2016 16:51:36 +0800
