@@ -229,8 +229,8 @@ set_wl_restrict_mode_2 () {
 		for ip_address in $(cat "$WIRELESS_ALLOW_CONF")
 		do
 			# Add the IP address into iptables
-                        iptables -I INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j DROP
-	                echo "INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j DROP" >> $IPTABLES_CONF
+                        iptables -I INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j ACCEPT
+	                echo "INPUT -p tcp -i $interface --dport $ssh_port -s $ip_address -j ACCEPT" >> $IPTABLES_CONF
 		done
 		# Add the wireless interface  iptables rule.
                 iptables -A INPUT -p tcp -i $interface --dport $ssh_port -j DROP
